@@ -17,6 +17,7 @@ final class HomeController
                 'description' => 'Créer des mots de passe solides, rapides et lisibles.',
                 'tone' => 'pink',
                 'icon' => $this->iconGenerator(),
+                'href' => '/password-generator',
             ],
             [
                 'slug' => 'password-manager',
@@ -24,6 +25,7 @@ final class HomeController
                 'description' => 'Centraliser l’accès et garder le contrôle sans friction.',
                 'tone' => 'orange',
                 'icon' => $this->iconShield(),
+                'href' => '/password-manager',
             ],
             [
                 'slug' => 'movie-tracker',
@@ -31,6 +33,7 @@ final class HomeController
                 'description' => 'Suivre les films, les listes et les habitudes cinéphiles.',
                 'tone' => 'ink',
                 'icon' => $this->iconFilm(),
+                'href' => '/movie-tracker',
             ],
         ];
 
@@ -47,7 +50,7 @@ final class HomeController
 
         foreach ($modules as $module) {
             $cards .= sprintf(
-                '<a class="module-card tone-%s" href="#%s" aria-label="%s">
+                '<a class="module-card tone-%s" href="%s" aria-label="%s">
                     <span class="module-card__icon">%s</span>
                     <span class="module-card__content">
                         <span class="module-card__title">%s</span>
@@ -55,7 +58,7 @@ final class HomeController
                     </span>
                 </a>',
                 htmlspecialchars($module['tone'], ENT_QUOTES),
-                htmlspecialchars($module['slug'], ENT_QUOTES),
+                htmlspecialchars($module['href'], ENT_QUOTES),
                 htmlspecialchars($module['title'], ENT_QUOTES),
                 $module['icon'],
                 htmlspecialchars($module['title'], ENT_QUOTES),
@@ -72,7 +75,7 @@ final class HomeController
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
-    <title>Riskiness - La vie est un coup de dé.</title>
+    <title>RISKINESS - Accueil</title>
     <style>
         :root {
             --brand-pink: #F5245E;
@@ -103,7 +106,7 @@ final class HomeController
                 radial-gradient(circle at 85% 20%, rgba(255, 122, 61, 0.12), transparent 28%),
                 radial-gradient(circle at 50% 100%, rgba(245, 36, 94, 0.08), transparent 32%),
                 linear-gradient(180deg, var(--bg-canvas) 0%, var(--bg-page) 100%);
-            padding-bottom: 72px;
+            padding-bottom: 66px;
         }
 
         a { color: inherit; text-decoration: none; }
@@ -142,15 +145,14 @@ final class HomeController
             z-index: 1;
             width: min(calc(100% - 32px), var(--container));
             margin: 0 auto;
-            padding: 28px 0 24px;
+            padding: 28px 0 28px;
         }
 
         .headerline {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             gap: 16px;
-            margin-bottom: 22px;
             padding: 12px 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-pill);
@@ -180,9 +182,8 @@ final class HomeController
         }
 
         .intro {
-            margin: 8px 4px 18px;
+            margin: 26px 4px 12px;
         }
-        .intro h1,
         .intro h2 {
             margin: 0;
             font-size: clamp(2rem, 4vw, 3rem);
@@ -195,6 +196,12 @@ final class HomeController
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+        }
+        .intro p {
+            margin: 14px 0 0;
+            max-width: 64ch;
+            color: var(--text-secondary);
+            line-height: 1.65;
         }
 
         .grid {
@@ -281,12 +288,12 @@ final class HomeController
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 8px 16px;
-            background: rgba(11, 9, 16, 0.42);
+            padding: 7px 14px;
+            background: rgba(11, 9, 16, 0.40);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.04);
             color: var(--text-tertiary);
-            font-size: 0.76rem;
+            font-size: 0.74rem;
             line-height: 1.2;
             text-align: center;
             letter-spacing: 0.01em;
@@ -303,10 +310,9 @@ final class HomeController
             .brand { width: 100%; }
             .brand__logo { max-width: 100%; height: 38px; }
             .brand__name { font-size: 0.98rem; }
-            .intro h1,
             .intro h2 { font-size: clamp(1.9rem, 10vw, 2.8rem); }
             .module-card { grid-column: span 12; min-height: 188px; }
-            .footer { padding: 7px 12px; }
+            .footer { padding: 6px 10px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
