@@ -35,6 +35,38 @@ final class HomeController
                 'icon' => $this->iconFilm(),
                 'href' => '/movie-tracker',
             ],
+            [
+                'slug' => 'budget-pulse',
+                'title' => 'Budget Pulse',
+                'description' => 'Piloter revenus, dépenses et équilibre financier en un seul regard.',
+                'tone' => 'pink',
+                'icon' => $this->iconWallet(),
+                'href' => '/budget-pulse',
+            ],
+            [
+                'slug' => 'recipe-atelier',
+                'title' => 'Recipe Atelier',
+                'description' => 'Composer, retrouver et partager des recettes avec une interface fluide.',
+                'tone' => 'orange',
+                'icon' => $this->iconChefHat(),
+                'href' => '/recipe-atelier',
+            ],
+            [
+                'slug' => 'doc-sentinel',
+                'title' => 'Doc Sentinel',
+                'description' => 'Surveiller les dates d’expiration et relancer les documents avant l’échéance.',
+                'tone' => 'ink',
+                'icon' => $this->iconFileClock(),
+                'href' => '/doc-sentinel',
+            ],
+            [
+                'slug' => 'cycle-care',
+                'title' => 'Cycle Care',
+                'description' => 'Suivre les cycles, noter les signaux et gérer le confort avec tact.',
+                'tone' => 'pink',
+                'icon' => $this->iconHeartPulse(),
+                'href' => '/cycle-care',
+            ],
         ];
 
         return new Response(
@@ -152,6 +184,7 @@ final class HomeController
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: nowrap;
             gap: 16px;
             padding: 12px 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -159,10 +192,35 @@ final class HomeController
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-secondary);
         }
+        .headerline__actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex: none;
+            white-space: nowrap;
+        }
+        .headerline__button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            flex: none;
+        }
+        .headerline__button svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 1.9;
+        }
         .brand {
             display: inline-flex;
             align-items: center;
             gap: 14px;
+            flex: 1 1 auto;
             min-width: 0;
         }
         .brand__logo {
@@ -179,6 +237,8 @@ final class HomeController
             letter-spacing: -0.02em;
             text-transform: uppercase;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .intro {
@@ -211,7 +271,7 @@ final class HomeController
             margin-top: 22px;
         }
         .module-card {
-            grid-column: span 4;
+            grid-column: span 3;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -301,15 +361,15 @@ final class HomeController
         }
 
         @media (max-width: 900px) {
-            .headerline { flex-direction: column; align-items: flex-start; }
             .module-card { grid-column: span 6; min-height: 210px; }
         }
 
         @media (max-width: 640px) {
             .shell { width: min(calc(100% - 20px), var(--container)); }
-            .brand { width: 100%; }
-            .brand__logo { max-width: 100%; height: 38px; }
+            .brand__logo { max-width: 100%; height: 34px; }
             .brand__name { font-size: 0.98rem; }
+            .headerline__button { width: 44px; height: 44px; border-radius: 16px; }
+            .headerline__button svg { width: 20px; height: 20px; }
             .intro h2 { font-size: clamp(1.9rem, 10vw, 2.8rem); }
             .module-card { grid-column: span 12; min-height: 188px; }
             .footer { padding: 6px 10px; }
@@ -331,6 +391,21 @@ final class HomeController
                 <div class="brand">
                     <img class="brand__logo" src="/logo/riskiness-icon-degrade.svg" alt="Riskiness">
                     <span class="brand__name">RISKINESS</span>
+                </div>
+                <div class="headerline__actions">
+                    <a class="headerline__button" href="/" aria-label="Accueil" title="Accueil">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
+                            <path d="M3 11.5 12 4l9 7.5"/>
+                            <path d="M6 10.5V20h12v-9.5"/>
+                            <path d="M10 20v-5h4v5"/>
+                        </svg>
+                    </a>
+                    <button class="headerline__button" type="button" aria-label="Mon compte" title="Mon compte">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
+                            <circle cx="12" cy="8" r="3.5"/>
+                            <path d="M5 20a7 7 0 0 1 14 0"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -367,5 +442,35 @@ HTML;
     private function iconFilm(): string
     {
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M4.5 8.5h15a1 1 0 0 1 1 1V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2V9.5a1 1 0 0 1 1-1z"/><path d="M4.5 8.5 7 5h3l-2.5 3.5M10 8.5 12.5 5h3L13 8.5M15.5 8.5 18 5h1.5"/><path d="M11 12.2 14.8 14.5 11 16.8z"/></svg>';
+    }
+
+    private function iconWallet(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M5 7.5A2.5 2.5 0 0 1 7.5 5h10A1.5 1.5 0 0 1 19 6.5V8H7.5A2.5 2.5 0 0 0 5 10.5v8A2.5 2.5 0 0 0 7.5 21h10A1.5 1.5 0 0 0 19 19.5V18h-9.5A2.5 2.5 0 0 1 7 15.5v-3A2.5 2.5 0 0 1 9.5 10H19"/><circle cx="16.5" cy="14.5" r="1"/></svg>';
+    }
+
+    private function iconChefHat(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M7 20h10"/><path d="M8 20v-6.5A3.5 3.5 0 0 1 5 10a3.5 3.5 0 0 1 3.2-3.5A4.5 4.5 0 0 1 16 5.2a4 4 0 0 1 5 3.8A3.5 3.5 0 0 1 18.5 12H18v8H8z"/><path d="M10 11.5h4"/></svg>';
+    }
+
+    private function iconCalendarClock(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><circle cx="15" cy="15" r="2.5"/><path d="M15 13.8v1.4l1 0.7"/></svg>';
+    }
+
+    private function iconShieldCheck(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M12 3 4 6v5c0 5 3.2 8.7 8 10 4.8-1.3 8-5 8-10V6l-8-3z"/><path d="M9.2 12.3 11 14l4-4"/></svg>';
+    }
+
+    private function iconFileClock(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><circle cx="15.5" cy="16.5" r="2.5"/><path d="M15.5 15.3v1.2l.8.5"/></svg>';
+    }
+
+    private function iconHeartPulse(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M12 21s-7-4.5-8.5-9.2C2.3 8.4 4.2 5.5 7 5.5c1.7 0 2.9.8 3.8 2 1-1.2 2.2-2 3.8-2 2.8 0 4.7 2.9 3.5 6.3C19 16.5 12 21 12 21z"/><path d="M6.5 12h2l1.2-2.2 1.7 4 1.3-2H17"/></svg>';
     }
 }

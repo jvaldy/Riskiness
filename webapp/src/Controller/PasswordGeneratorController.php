@@ -108,6 +108,7 @@ final class PasswordGeneratorController
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: nowrap;
             gap: 16px;
             padding: 12px 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -115,7 +116,15 @@ final class PasswordGeneratorController
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-secondary);
         }
-        .headerline__home {
+        .headerline__actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex: none;
+            white-space: nowrap;
+        }
+        .headerline__home,
+        .headerline__button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -125,14 +134,18 @@ final class PasswordGeneratorController
             border: 1px solid rgba(255, 255, 255, 0.08);
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-primary);
-            transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
             flex: none;
+        }
+        .headerline__home,
+        .headerline__button {
+            transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
         }
         .headerline__home:hover {
             transform: translateY(-1px);
             background: rgba(255, 255, 255, 0.06);
             border-color: rgba(245, 36, 94, 0.22);
         }
+        .headerline__button svg,
         .headerline__home svg {
             width: 22px;
             height: 22px;
@@ -142,6 +155,7 @@ final class PasswordGeneratorController
             display: inline-flex;
             align-items: center;
             gap: 14px;
+            flex: 1 1 auto;
             min-width: 0;
         }
         .brand__logo {
@@ -158,6 +172,8 @@ final class PasswordGeneratorController
             letter-spacing: -0.02em;
             text-transform: uppercase;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .intro {
@@ -407,15 +423,18 @@ final class PasswordGeneratorController
         }
 
         @media (max-width: 900px) {
-            .headerline { align-items: flex-start; }
+            .headerline { gap: 12px; }
             .generator__controls { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 640px) {
             .shell { width: min(calc(100% - 20px), var(--container)); }
-            .brand { width: 100%; }
-            .brand__logo { max-width: 100%; height: 38px; }
+            .brand__logo { max-width: 100%; height: 34px; }
             .brand__name { font-size: 0.98rem; }
+            .headerline__home,
+            .headerline__button { width: 44px; height: 44px; border-radius: 16px; }
+            .headerline__home svg,
+            .headerline__button svg { width: 20px; height: 20px; }
             .intro h2 { font-size: clamp(1.9rem, 10vw, 2.8rem); }
             .generator__panel { padding: 18px; border-radius: 28px; }
             .generator__actions-top { width: 100%; justify-content: stretch; }
@@ -441,13 +460,21 @@ final class PasswordGeneratorController
                     <img class="brand__logo" src="/logo/riskiness-icon-degrade.svg" alt="Riskiness">
                     <span class="brand__name">RISKINESS</span>
                 </div>
-                <a class="headerline__home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
-                        <path d="M3 11.5 12 4l9 7.5"/>
-                        <path d="M6 10.5V20h12v-9.5"/>
-                        <path d="M10 20v-5h4v5"/>
-                    </svg>
-                </a>
+                <div class="headerline__actions">
+                    <a class="headerline__home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
+                            <path d="M3 11.5 12 4l9 7.5"/>
+                            <path d="M6 10.5V20h12v-9.5"/>
+                            <path d="M10 20v-5h4v5"/>
+                        </svg>
+                    </a>
+                    <button class="headerline__button" type="button" aria-label="Mon compte" title="Mon compte">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
+                            <circle cx="12" cy="8" r="3.5"/>
+                            <path d="M5 20a7 7 0 0 1 14 0"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <section class="intro" aria-label="Introduction Riskiness">

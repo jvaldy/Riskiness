@@ -33,6 +33,58 @@ final class ModulePageController
         );
     }
 
+    #[Route('/budget-pulse', name: 'app_budget_pulse', methods: ['GET'])]
+    public function budgetPulse(): Response
+    {
+        return new Response(
+            $this->render(
+                'Budget Pulse',
+                'Piloter les revenus, les dépenses et les arbitrages financiers dans une vue claire et premium.'
+            ),
+            Response::HTTP_OK,
+            ['Content-Type' => 'text/html; charset=UTF-8']
+        );
+    }
+
+    #[Route('/recipe-atelier', name: 'app_recipe_atelier', methods: ['GET'])]
+    public function recipeAtelier(): Response
+    {
+        return new Response(
+            $this->render(
+                'Recipe Atelier',
+                'Organiser des recettes, structurer les ingrédients et retrouver rapidement chaque préparation.'
+            ),
+            Response::HTTP_OK,
+            ['Content-Type' => 'text/html; charset=UTF-8']
+        );
+    }
+
+    #[Route('/doc-sentinel', name: 'app_doc_sentinel', methods: ['GET'])]
+    public function docSentinel(): Response
+    {
+        return new Response(
+            $this->render(
+                'Doc Sentinel',
+                'Surveiller les dates d’expiration, les relances et les documents sensibles avec précision.'
+            ),
+            Response::HTTP_OK,
+            ['Content-Type' => 'text/html; charset=UTF-8']
+        );
+    }
+
+    #[Route('/cycle-care', name: 'app_cycle_care', methods: ['GET'])]
+    public function cycleCare(): Response
+    {
+        return new Response(
+            $this->render(
+                'Cycle Care',
+                'Suivre les cycles, les symptômes et le confort avec une expérience douce et discrète.'
+            ),
+            Response::HTTP_OK,
+            ['Content-Type' => 'text/html; charset=UTF-8']
+        );
+    }
+
     private function render(string $title, string $description): string
     {
         $safeTitle = htmlspecialchars($title, ENT_QUOTES);
@@ -97,16 +149,25 @@ final class ModulePageController
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: nowrap;
             gap: 16px;
             padding: 12px 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-pill);
             background: rgba(255, 255, 255, 0.03);
         }
+        .headerline__actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex: none;
+            white-space: nowrap;
+        }
         .brand {
             display: inline-flex;
             align-items: center;
             gap: 14px;
+            flex: 1 1 auto;
             min-width: 0;
         }
         .brand__logo {
@@ -123,6 +184,8 @@ final class ModulePageController
             letter-spacing: -0.02em;
             text-transform: uppercase;
             white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .headerline__home {
             display: inline-flex;
@@ -136,6 +199,25 @@ final class ModulePageController
             color: var(--text-primary);
             flex: none;
         }
+        .headerline__button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            flex: none;
+            transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+        }
+        .headerline__button:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(245, 36, 94, 0.22);
+        }
+        .headerline__button svg,
         .headerline__home svg {
             width: 22px;
             height: 22px;
@@ -207,9 +289,12 @@ final class ModulePageController
 
         @media (max-width: 640px) {
             .shell { width: min(calc(100% - 20px), var(--container)); }
-            .brand { width: 100%; }
-            .brand__logo { max-width: 100%; height: 38px; }
+            .brand__logo { max-width: 100%; height: 34px; }
             .brand__name { font-size: 0.98rem; }
+            .headerline__home,
+            .headerline__button { width: 44px; height: 44px; border-radius: 16px; }
+            .headerline__home svg,
+            .headerline__button svg { width: 20px; height: 20px; }
             .hero { padding: 20px; }
         }
     </style>
@@ -222,13 +307,21 @@ final class ModulePageController
                     <img class="brand__logo" src="/logo/riskiness-icon-degrade.svg" alt="Riskiness">
                     <span class="brand__name">RISKINESS</span>
                 </div>
-                <a class="headerline__home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
-                        <path d="M3 11.5 12 4l9 7.5"/>
-                        <path d="M6 10.5V20h12v-9.5"/>
-                        <path d="M10 20v-5h4v5"/>
-                    </svg>
-                </a>
+                <div class="headerline__actions">
+                    <a class="headerline__home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
+                            <path d="M3 11.5 12 4l9 7.5"/>
+                            <path d="M6 10.5V20h12v-9.5"/>
+                            <path d="M10 20v-5h4v5"/>
+                        </svg>
+                    </a>
+                    <button class="headerline__button" type="button" aria-label="Mon compte" title="Mon compte">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
+                            <circle cx="12" cy="8" r="3.5"/>
+                            <path d="M5 20a7 7 0 0 1 14 0"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <section class="hero" aria-label="Module {$safeTitle}">
