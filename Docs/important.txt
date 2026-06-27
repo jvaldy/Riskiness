@@ -1,5 +1,15 @@
 Commandes et infos importantes
 
+Technologies de reference :
+- Symfony 6.4
+- PHP 8.1+
+- YAML pour la configuration Symfony
+- Tailwind CSS pour l'implementation UI
+- Lucide pour les icones SVG
+- Tokens centralises dans `webapp/config/design-system/`
+- Charte graphique centralisee dans `Docs/`
+- Pas de React ni de Next.js dans l'etat actuel du depot
+
 URL locale : http://127.0.0.1:8000/
 Serveur : PHP dev server sur `webapp/public`
 

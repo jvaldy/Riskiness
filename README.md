@@ -1,6 +1,16 @@
 # Riskiness
 
-Application web Symfony pensee pour evoluer par modules independants.
+Application web Symfony 6.4 pensee pour evoluer par modules independants, avec une direction artistique centralisee et une base UI homogène.
+
+## Stack de reference
+
+- Backend applicatif : Symfony 6.4 / PHP 8.1+
+- Configuration et services : YAML Symfony
+- UI et mise en page : Tailwind CSS
+- Icones : Lucide en SVG
+- Design system : tokens centralises dans `webapp/config/design-system/`
+- Organisation graphique : charte centrale dans `Docs/`
+- Frontend React / Next.js : non utilise pour le moment dans ce depot
 
 ## Structure
 
