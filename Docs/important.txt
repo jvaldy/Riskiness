@@ -1,0 +1,22 @@
+Commandes et infos importantes
+
+URL locale : http://127.0.0.1:8000/
+Serveur : PHP dev server sur `webapp/public`
+
+Commandes utiles :
+- Aller dans l'app : `cd webapp`
+- Installer les dépendances : `composer install`
+- Lancer Symfony en local : `php -S 127.0.0.1:8000 -t public`
+- Arrêter Symfony : `Ctrl+C` si le serveur tourne au premier plan
+- Arrêter un serveur lancé en arrière-plan : `Stop-Process -Name php` si aucun autre PHP ne tourne
+- Voir l'état Symfony : `php bin/console about`
+- Vider le cache : `php bin/console cache:clear`
+
+Notes :
+- Ce fichier est fait pour être mis à jour au fur et à mesure du projet.
+- Ajoute ici les commandes utiles, les liens locaux et les points d’attention.
+- `webapp/.env` doit rester un template committable, sans secret réel.
+- `webapp/.env.example` sert de référence pour l’onboarding local.
+- `webapp/.env.prod` rend le mode prod explicite sans embarquer de secret réel.
+- En production, configure `APP_SECRET` via les variables d’environnement ou `webapp/.env.local` sur le serveur, jamais dans un fichier versionné.
+- Si un secret a déjà été poussé sur Git, il faut aussi le faire tourner côté production.

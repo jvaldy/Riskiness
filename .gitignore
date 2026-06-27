@@ -1,0 +1,29 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.cache
+*.pid
+*.seed
+*.swp
+*.swo
+
+# Symfony / PHP
+/webapp/.env.local
+/webapp/.env.*.local
+/webapp/var/
+/webapp/vendor/
+/webapp/public/bundles/
+/webapp/config/secrets/
+
+# Composer
+/composer.lock
+
+# Project docs and generated files
+/webapp/var/
