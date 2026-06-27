@@ -1,0 +1,72 @@
+{
+  "theme": {
+    "screens": {
+      "sm": "640px",
+      "md": "768px",
+      "lg": "1024px",
+      "xl": "1280px",
+      "2xl": "1536px"
+    },
+    "colors": {
+      "brand": {
+        "pink": "#F5245E",
+        "orange": "#FF7A3D",
+        "gradient": "linear-gradient(135deg, #F5245E 0%, #FF7A3D 100%)"
+      },
+      "ink": {
+        "deep": "#241B2E"
+      },
+      "background": {
+        "canvas": "#0B0910",
+        "page": "#120F17"
+      },
+      "surface": {
+        "1": "#17131D",
+        "2": "#1D1724",
+        "3": "#241B2E",
+        "elevated": "#2C2237"
+      },
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "rgba(255,255,255,0.72)",
+        "tertiary": "rgba(255,255,255,0.52)",
+        "muted": "rgba(255,255,255,0.38)",
+        "inverse": "#0B0910"
+      },
+      "semantic": {
+        "success": "#19C37D",
+        "warning": "#F5A524",
+        "error": "#FF4D4F",
+        "info": "#6C8CFF"
+      }
+    },
+    "fontFamily": {
+      "sans": ["Poppins", "system-ui", "sans-serif"]
+    },
+    "borderRadius": {
+      "xs": "8px",
+      "sm": "12px",
+      "md": "16px",
+      "lg": "24px",
+      "xl": "32px",
+      "pill": "999px"
+    },
+    "boxShadow": {
+      "sm": "0 4px 12px rgba(0,0,0,0.18)",
+      "md": "0 10px 30px rgba(0,0,0,0.24)",
+      "lg": "0 18px 48px rgba(0,0,0,0.30)",
+      "glow": "0 0 0 1px rgba(245,36,94,0.18), 0 0 24px rgba(245,36,94,0.18)"
+    },
+    "spacing": {
+      "1": "4px",
+      "2": "8px",
+      "3": "12px",
+      "4": "16px",
+      "5": "24px",
+      "6": "32px",
+      "7": "40px",
+      "8": "48px",
+      "9": "64px"
+    }
+  }
+}

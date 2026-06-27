@@ -69,6 +69,13 @@ Commandes Git utiles :
 Notes :
 - Ce fichier est fait pour etre mis a jour au fur et a mesure du projet.
 - Ajoute ici les commandes utiles, les liens locaux et les points d'attention.
+- Charte centrale : `Docs/RISKINESS_DESIGN_SYSTEM.md`
+- Charte icones : `Docs/RISKINESS_ICON_SYSTEM.md`
+- Guide Tailwind : `Docs/TAILWIND_IMPLEMENTATION.md`
+- Tokens de reference : `webapp/config/design-system/riskiness.tokens.json`
+- Variables CSS de base : `webapp/config/design-system/riskiness.tokens.css`
+- Registre Lucide : `webapp/config/design-system/riskiness.icons.json`
+- Theme Tailwind : `webapp/config/design-system/tailwind.theme.json`
 - `webapp/.env` doit rester un template committable, sans secret reel.
 - `webapp/.env.example` sert de reference pour l'onboarding local.
 - `webapp/.env.prod` rend le mode prod explicite sans embarquer de secret reel.

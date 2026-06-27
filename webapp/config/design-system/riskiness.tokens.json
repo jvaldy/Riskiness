@@ -1,0 +1,163 @@
+{
+  "brand": {
+    "name": "Riskiness",
+    "slogan": "La vie est un coup de de",
+    "logo": {
+      "minimumSizePx": 32,
+      "safeAreaRule": "Keep free space around the die icon equal to its height"
+    }
+  },
+  "colors": {
+    "brand": {
+      "pink": "#F5245E",
+      "orange": "#FF7A3D",
+      "gradient": "linear-gradient(135deg, #F5245E 0%, #FF7A3D 100%)"
+    },
+    "ink": {
+      "deep": "#241B2E"
+    },
+    "neutral": {
+      "white": "#FFFFFF",
+      "black": "#000000"
+    },
+    "background": {
+      "canvas": "#0B0910",
+      "page": "#120F17"
+    },
+    "surface": {
+      "1": "#17131D",
+      "2": "#1D1724",
+      "3": "#241B2E",
+      "elevated": "#2C2237"
+    },
+    "border": {
+      "subtle": "rgba(255,255,255,0.08)",
+      "default": "rgba(255,255,255,0.12)",
+      "strong": "rgba(255,255,255,0.18)",
+      "accent": "rgba(245,36,94,0.45)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "rgba(255,255,255,0.72)",
+      "tertiary": "rgba(255,255,255,0.52)",
+      "muted": "rgba(255,255,255,0.38)",
+      "inverse": "#0B0910"
+    },
+    "semantic": {
+      "success": "#19C37D",
+      "warning": "#F5A524",
+      "error": "#FF4D4F",
+      "info": "#6C8CFF"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "'Poppins', system-ui, sans-serif",
+      "fallback": "system-ui, sans-serif"
+    },
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "scalePx": {
+      "display": 56,
+      "h1": 40,
+      "h2": 28,
+      "h3": 22,
+      "body": 16,
+      "caption": 13,
+      "micro": 12
+    },
+    "lineHeight": {
+      "tight": 1.1,
+      "title": 1.2,
+      "body": 1.5,
+      "comfortable": 1.6
+    }
+  },
+  "spacing": {
+    "base": 4,
+    "scale": [4, 8, 12, 16, 24, 32, 40, 48, 64]
+  },
+  "radius": {
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "pill": 999
+  },
+  "shadows": {
+    "sm": "0 4px 12px rgba(0,0,0,0.18)",
+    "md": "0 10px 30px rgba(0,0,0,0.24)",
+    "lg": "0 18px 48px rgba(0,0,0,0.30)",
+    "glow": "0 0 0 1px rgba(245,36,94,0.18), 0 0 24px rgba(245,36,94,0.18)"
+  },
+  "motion": {
+    "durationMs": {
+      "fast": 120,
+      "normal": 180,
+      "slow": 240
+    },
+    "easing": {
+      "standard": "cubic-bezier(0.2, 0, 0, 1)",
+      "emphasis": "cubic-bezier(0.16, 1, 0.3, 1)"
+    }
+  },
+  "iconography": {
+    "style": "consistent svg line icons",
+    "sizesPx": [16, 20, 24, 32, 40],
+    "defaultStrokeWidth": 1.8,
+    "colorBehavior": "icons inherit the text or component state color"
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "background": "brand.gradient",
+        "textColor": "neutral.white",
+        "radius": "pill",
+        "shadow": "glow"
+      },
+      "secondary": {
+        "background": "surface.2",
+        "textColor": "text.primary",
+        "borderColor": "border.default",
+        "radius": "md"
+      },
+      "tertiary": {
+        "background": "transparent",
+        "textColor": "text.secondary",
+        "radius": "sm"
+      }
+    },
+    "input": {
+      "background": "surface.1",
+      "borderColor": "border.default",
+      "focusBorderColor": "brand.pink",
+      "radius": "md"
+    },
+    "card": {
+      "background": "surface.2",
+      "borderColor": "border.subtle",
+      "radius": "lg",
+      "shadow": "md"
+    },
+    "modal": {
+      "background": "surface.3",
+      "overlay": "rgba(11,9,16,0.72)",
+      "radius": "lg",
+      "shadow": "lg"
+    },
+    "badge": {
+      "radius": "pill",
+      "fontWeight": 600
+    },
+    "table": {
+      "rowHoverBackground": "rgba(255,255,255,0.04)",
+      "headerTextColor": "text.secondary",
+      "borderColor": "border.subtle"
+    }
+  }
+}

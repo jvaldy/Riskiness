@@ -6,6 +6,13 @@ Application web Symfony pensee pour evoluer par modules independants.
 
 - `webapp/` : application Symfony
 - `Docs/important.txt` : commandes utiles, points d'attention et notes de deploiement
+- `Docs/RISKINESS_DESIGN_SYSTEM.md` : charte graphique centrale et regles UI
+- `Docs/RISKINESS_ICON_SYSTEM.md` : regles d'utilisation de Lucide et registre des icones
+- `Docs/TAILWIND_IMPLEMENTATION.md` : regles Tailwind pour le responsive et les layouts
+- `webapp/config/design-system/riskiness.tokens.json` : tokens de reference
+- `webapp/config/design-system/riskiness.tokens.css` : variables CSS de base
+- `webapp/config/design-system/riskiness.icons.json` : aliases et set d'icones Lucide
+- `webapp/config/design-system/tailwind.theme.json` : theme de reference Tailwind
 - `logo/` : ressources graphiques
 
 ## Pre requis
