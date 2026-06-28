@@ -65,6 +65,13 @@ Process prod :
    `php bin/console about --env=prod`
 9. Redemarrer le service web si necessaire.
 
+Demarrage prod local Windows :
+- Depuis `webapp`, lancer :
+  `powershell -ExecutionPolicy Bypass -File .\scripts\start-prod.ps1`
+- Le script cree `webapp\var\sessions` si besoin.
+- Il coupe uniquement un `php.exe` qui occupe le port `8000` avant de relancer Symfony.
+- Il force `APP_ENV=prod` et `APP_DEBUG=0` pour le serveur local.
+
 Commandes Git utiles :
 - Voir l'etat du depot : `git status`
 - Voir les changements : `git diff`

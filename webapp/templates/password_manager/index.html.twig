@@ -1,0 +1,1069 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Password Manager{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .vault {
+            margin: 28px 4px 10px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .vault__hero,
+        .vault__panel {
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 34%),
+                radial-gradient(circle at left, rgba(245, 36, 94, 0.12), transparent 28%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03)),
+                var(--surface-1);
+            box-shadow: var(--shadow-md);
+        }
+
+        .vault__hero {
+            padding: 26px;
+        }
+
+        .vault__eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .vault__eyebrow::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--brand-gradient);
+            box-shadow: 0 0 18px rgba(245, 36, 94, 0.45);
+        }
+
+        .vault__title {
+            margin: 12px 0 8px;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            line-height: 1;
+            letter-spacing: -0.06em;
+        }
+
+        .vault__title .accent {
+            background: var(--brand-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .vault__lead {
+            margin: 0;
+            max-width: 70ch;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .vault__toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vault__overview {
+            display: grid;
+            gap: 14px;
+        }
+
+        .vault__overview-head {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .vault__overview-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .vault__overview-card {
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 14px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .vault__overview-card h3 {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .vault__overview-card p {
+            margin: 0;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .vault__overview-card details {
+            margin-top: 4px;
+        }
+
+        .vault__overview-card summary {
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.88rem;
+            list-style: none;
+        }
+
+        .vault__overview-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .vault__overview-card .vault__empty {
+            margin-top: 8px;
+        }
+
+        .vault__overview-card .audit-panel__button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 6px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .vault__overview-card-head {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .vault__overview-card-head strong {
+            font-size: 0.88rem;
+        }
+
+        .audit-panel__content {
+            margin-top: 8px;
+        }
+
+        .vault__chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .vault__chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .vault__chip strong {
+            color: var(--text-primary);
+        }
+
+        .vault__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .vault__import-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .vault__hero-actions {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .vault__button,
+        .vault__button-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            padding: 0 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+        }
+
+        .vault__button:hover,
+        .vault__button-link:hover {
+            transform: translateY(-1px);
+            border-color: rgba(245, 36, 94, 0.40);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .vault__button--brand,
+        .vault__button-link--brand {
+            border-color: transparent;
+            background: var(--brand-gradient);
+            box-shadow: 0 14px 30px rgba(245, 36, 94, 0.22);
+        }
+
+        .vault__button--ghost {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .vault__grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        }
+
+        .vault__panel {
+            padding: 22px;
+        }
+
+        .vault__panel--full {
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            margin: 0 0 14px;
+            font-size: 1.08rem;
+            letter-spacing: -0.03em;
+        }
+
+        .vault-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .vault-form__grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .vault-form__field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .vault-form__field span {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+        }
+
+        .vault-form input,
+        .vault-form textarea,
+        .vault__search {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            padding: 13px 14px;
+            outline: none;
+        }
+
+        .vault-form textarea {
+            min-height: 118px;
+            resize: vertical;
+        }
+
+        .vault-form input:focus,
+        .vault-form textarea:focus,
+        .vault__search:focus {
+            border-color: rgba(245, 36, 94, 0.55);
+            box-shadow: 0 0 0 4px rgba(245, 36, 94, 0.12);
+        }
+
+        .vault__section-head {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .vault__searchform {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1 1 420px;
+            max-width: 720px;
+        }
+
+        .vault__searchform .vault__search {
+            flex: 1 1 auto;
+            min-width: 220px;
+        }
+
+        .field-with-action {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .field-with-action__input {
+            flex: 1 1 auto;
+        }
+
+        .field-with-action__toggle,
+        .entry-row__toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            min-width: 44px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .field-with-action__toggle svg,
+        .entry-row__toggle svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .flash {
+            margin-top: 0;
+        }
+
+        .entry-list {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: 1fr;
+        }
+
+        .entry-card {
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 12px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .entry-card__top {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .entry-card__title {
+            margin: 0;
+            font-size: 0.95rem;
+            letter-spacing: -0.03em;
+        }
+
+        .entry-card__meta {
+            color: var(--text-secondary);
+            font-size: 0.76rem;
+            word-break: break-word;
+        }
+
+        .entry-card__rows {
+            display: grid;
+            gap: 6px;
+        }
+
+        .entry-row {
+            display: grid;
+            grid-template-columns: 78px minmax(0, 1fr) auto;
+            gap: 6px;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .entry-row__label {
+            color: var(--text-tertiary);
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .entry-row__value {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.86rem;
+        }
+
+        .entry-row__value--wrap {
+            white-space: normal;
+        }
+
+        .entry-row__value--secret {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .entry-row__secret-text {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            letter-spacing: 0.14em;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        .entry-row__copy {
+            padding: 6px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.78rem;
+        }
+
+        .entry-card__actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .entry-details {
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+            padding: 8px 10px;
+        }
+
+        .entry-details + .entry-details {
+            margin-top: 8px;
+        }
+
+        .entry-details summary {
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.82rem;
+            list-style: none;
+        }
+
+        .entry-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .entry-details__body {
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .entry-details__body .entry-row {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+        }
+
+        .tag--weak {
+            border-color: rgba(255, 88, 104, 0.18);
+            background: rgba(255, 88, 104, 0.08);
+            color: rgba(255, 226, 231, 0.95);
+        }
+
+        .tag--good {
+            border-color: rgba(70, 255, 145, 0.14);
+            background: rgba(70, 255, 145, 0.07);
+            color: rgba(224, 255, 233, 0.94);
+        }
+
+        .audit-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .audit-item {
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 14px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .audit-item strong {
+            font-size: 0.95rem;
+        }
+
+        .audit-item small {
+            color: var(--text-secondary);
+        }
+
+        .vault__empty {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        .vault__split {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .vault__mini {
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 14px;
+        }
+
+        .vault__mini h3 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+        }
+
+        .vault__mini p {
+            margin: 0;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+
+        .vault__lockbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .vault__status {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .vault__lockform {
+            display: none;
+        }
+
+        @media (max-width: 960px) {
+            .vault__grid,
+            .vault__split,
+            .vault-form__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vault__overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vault__searchform {
+                flex: 1 1 100%;
+                max-width: none;
+            }
+
+            .entry-list {
+                grid-template-columns: 1fr;
+            }
+
+            .entry-row {
+                grid-template-columns: 1fr;
+            }
+
+            .entry-row__copy {
+                width: 100%;
+            }
+
+            .entry-row__value--secret {
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .vault {
+                margin: 22px 0 8px;
+            }
+
+            .vault__hero,
+            .vault__panel {
+                padding: 18px;
+                border-radius: 28px;
+            }
+
+            .vault__title {
+                font-size: clamp(1.8rem, 9vw, 2.6rem);
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% set form = entryForm ?? {
+        id: null,
+        title: '',
+        username: '',
+        password: '',
+        url: '',
+        notes: ''
+    } %}
+
+    <section class="vault" data-vault-page data-lock-seconds="{{ lockSeconds }}">
+        <article class="vault__hero">
+            <span class="vault__eyebrow">Coffre sécurisé</span>
+            <h1 class="vault__title"><span class="accent">Password Manager</span></h1>
+            <p class="vault__lead">
+                Stocke, chiffre et retrouve tes identifiants dans un coffre maître.
+            </p>
+
+            <div class="vault__hero-actions">
+                <a class="vault__button vault__button-link--brand" href="{{ generatorUrl }}">Password Générateur</a>
+            </div>
+
+        </article>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash flash--{{ label }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        {% if setupMode %}
+            <div class="vault__grid">
+                <section class="vault__panel">
+                    <h2 class="section-title">Initialiser le coffre</h2>
+                    <form method="post" action="{{ path('app_password_manager_setup') }}" class="vault-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_setup') }}">
+                        <div class="vault-form__grid">
+                            <label class="vault-form__field">
+                                <span>Mot de passe maître</span>
+                                <input type="password" name="master_password" minlength="8" autocomplete="new-password" required>
+                            </label>
+                            <label class="vault-form__field">
+                                <span>Confirmation</span>
+                                <input type="password" name="master_password_confirmation" minlength="8" autocomplete="new-password" required>
+                            </label>
+                        </div>
+                        <button class="vault__button vault__button--brand" type="submit">Créer et déverrouiller le coffre</button>
+                    </form>
+                </section>
+
+                <aside class="vault__panel">
+                    <h2 class="section-title">Ce que le coffre protège</h2>
+                    <div class="vault__split">
+                        <div class="vault__mini">
+                            <h3>Chiffrement fort</h3>
+                            <p>Tous les champs sensibles sont chiffrés avant écriture en base avec une clé dérivée du mot de passe maître.</p>
+                        </div>
+                        <div class="vault__mini">
+                            <h3>Verrouillage automatique</h3>
+                            <p>Le coffre se verrouille après trois minutes d’inactivité pour limiter l’exposition des secrets.</p>
+                        </div>
+                        <div class="vault__mini">
+                            <h3>Import / export</h3>
+                            <p>Tu peux injecter une liste complète ou l’exporter en JSON, avec mise à jour des entrées déjà présentes.</p>
+                        </div>
+                        <div class="vault__mini">
+                            <h3>Audit sécurité</h3>
+                            <p>Les mots de passe faibles ou réutilisés sont mis en évidence pour corriger rapidement les points critiques.</p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        {% elseif not isUnlocked %}
+            <div class="vault__grid">
+                <section class="vault__panel">
+                    <h2 class="section-title">Déverrouiller le coffre</h2>
+                    <form method="post" action="{{ path('app_password_manager_unlock') }}" class="vault-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_unlock') }}">
+                        <label class="vault-form__field">
+                            <span>Mot de passe maître</span>
+                            <input type="password" name="master_password" autocomplete="current-password" required>
+                        </label>
+                        <button class="vault__button vault__button--brand" type="submit">Déverrouiller</button>
+                    </form>
+                </section>
+
+                <aside class="vault__panel">
+                    <h2 class="section-title">Accès au générateur</h2>
+                    <p class="vault__lead">Tu peux générer un mot de passe fort à la volée avant de l’enregistrer dans ton coffre.</p>
+                </aside>
+            </div>
+        {% else %}
+                        <div class="vault__panel vault__overview">
+                <div class="vault__overview-head">
+                    <div class="vault__chips">
+                        <span class="vault__chip">Entrées <strong>{{ audit.summary.total }}</strong></span>
+                        <span class="vault__chip">Faibles <strong>{{ audit.summary.weak }}</strong></span>
+                        <span class="vault__chip">Réutilisées <strong>{{ audit.summary.reused }}</strong></span>
+                        <span class="vault__chip">Verrouillage auto <strong>3 min</strong></span>
+                    </div>
+                    <div class="vault__actions">
+                        <form method="post" action="{{ path('app_password_manager_lock') }}">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_lock') }}">
+                            <button class="vault__button vault__button--ghost" type="submit">Verrouiller</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="vault__overview-grid">
+                    <div class="vault__overview-card">
+                        <div class="vault__overview-card-head">
+                            <strong>Faibles détectés</strong>
+                            <button type="button" class="audit-panel__button" data-audit-toggle>Voir</button>
+                        </div>
+                        <div class="audit-panel__content" hidden>
+                            <p>{{ audit.summary.weak }} entrée(s) à corriger.</p>
+                            {% if audit.weak is not empty %}
+                                <p>{{ audit.weak|map(item => item.title)|join(', ') }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="vault__overview-card">
+                        <div class="vault__overview-card-head">
+                            <strong>Réutilisations</strong>
+                            <button type="button" class="audit-panel__button" data-audit-toggle>Voir</button>
+                        </div>
+                        <div class="audit-panel__content" hidden>
+                            <p>{{ audit.summary.reused }} entrée(s) partagent déjà un mot de passe identique.</p>
+                            {% if audit.reused is not empty %}
+                                <p>{{ audit.reused|map(item => item.title)|join(', ') }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vault__grid">
+                <section class="vault__panel">
+                    <h2 class="section-title">{{ form.id ? 'Modifier une entrée' : 'Ajouter une entrée' }}</h2>
+                    <form method="post" action="{{ path('app_password_manager_entry_save') }}" class="vault-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_entry') }}">
+                        {% if form.id %}
+                            <input type="hidden" name="entry_id" value="{{ form.id }}">
+                        {% endif %}
+                        <div class="vault-form__grid">
+                            <label class="vault-form__field">
+                                <span>Titre</span>
+                                <input type="text" name="title" value="{{ form.title }}" required>
+                            </label>
+                            <label class="vault-form__field">
+                                <span>Identifiant</span>
+                                <input type="text" name="username" value="{{ form.username }}" autocomplete="off">
+                            </label>
+                            <label class="vault-form__field">
+                                <span>Mot de passe</span>
+                                <div class="field-with-action">
+                                    <input class="field-with-action__input" id="vault-entry-password" type="password" name="password" value="{{ form.password }}" required autocomplete="new-password">
+                                    <button
+                                        type="button"
+                                        class="field-with-action__toggle"
+                                        data-password-toggle
+                                        data-password-target="vault-entry-password"
+                                        aria-label="Afficher le mot de passe"
+                                        aria-pressed="false"
+                                    >
+                                        <svg data-password-icon="show" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+                                        </svg>
+                                        <svg data-password-icon="hide" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+                                            <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                            <path d="M10.6 10.6a3 3 0 0 0 4.24 4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                            <path d="M6.2 6.2C4 7.7 2.6 10 2 12c1.3 4.2 5 7 10 7 1.9 0 3.7-.4 5.2-1.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M9.4 4.3A10.7 10.7 0 0 1 12 4c6.4 0 10 8 10 8a19.2 19.2 0 0 1-3 4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </label>
+                            <label class="vault-form__field">
+                                <span>URL</span>
+                                <input type="text" name="url" value="{{ form.url }}" placeholder="ex: example.com ou https://example.com" autocomplete="off">
+                            </label>
+                        </div>
+                        <label class="vault-form__field">
+                            <span>Notes sécurisées</span>
+                            <textarea name="notes">{{ form.notes }}</textarea>
+                        </label>
+                        <div class="vault__actions">
+                            <button class="vault__button vault__button--brand" type="submit">{{ form.id ? 'Mettre à jour' : 'Ajouter' }}</button>
+                            {% if form.id %}
+                                <a class="vault__button vault__button-link" href="{{ path('app_password_manager') }}">Annuler</a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </section>
+
+                <aside class="vault__panel">
+                    <h2 class="section-title">Import / export</h2>
+                    <div class="vault__import-actions">
+                        <a class="vault__button vault__button-link--brand" href="{{ exportUrl }}">Exporter le coffre</a>
+                    </div>
+                    <form method="post" action="{{ path('app_password_manager_import') }}" enctype="multipart/form-data" class="vault-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_import') }}">
+                        <label class="vault-form__field">
+                            <span>Fichier JSON</span>
+                            <input type="file" name="import_file" accept=".json,application/json">
+                        </label>
+                        <label class="vault-form__field">
+                            <span>Ou coller le JSON</span>
+                            <textarea name="import_json" placeholder='[{"title":"...","username":"...","password":"..."}]'></textarea>
+                        </label>
+                        <label class="vault__chip" style="justify-content: flex-start;">
+                            <input type="checkbox" name="upsert_existing" value="1" checked>
+                            Mettre à jour si l’entrée existe déjà
+                        </label>
+                        <button class="vault__button vault__button--brand" type="submit">Importer</button>
+                    </form>
+                </aside>
+
+                <section class="vault__panel vault__panel--full">
+                    <div class="vault__section-head">
+                        <h2 class="section-title">Entrées enregistrées</h2>
+                        <form method="get" action="{{ path('app_password_manager') }}" class="vault__searchform">
+                            <input class="vault__search" type="search" name="q" value="{{ query }}" placeholder="Rechercher un identifiant, un site, une note..." autocomplete="off">
+                            <button class="vault__button vault__button--ghost" type="submit">Rechercher</button>
+                        </form>
+                    </div>
+                    {% if entries is empty %}
+                        <p class="vault__empty">Aucune entrée ne correspond à ta recherche.</p>
+                    {% else %}
+                        <div class="entry-list">
+                            {% for entry in entries %}
+                                <article class="entry-card">
+                                    <div class="entry-card__top">
+                                        <div>
+                                            <h3 class="entry-card__title">{{ entry.title }}</h3>
+                                            <div class="entry-card__meta">
+                                                Mise à jour le {{ entry.updatedAt|date('d/m/Y à H:i') }}
+                                            </div>
+                                        </div>
+                                        <span class="tag {{ entry.strength.weak ? 'tag--weak' : 'tag--good' }}">
+                                            {{ entry.strength.label }}
+                                        </span>
+                                    </div>
+
+                                    <details class="entry-details">
+                                        <summary>Afficher les détails</summary>
+                                        <div class="entry-details__body">
+                                            <div class="entry-row">
+                                                <div class="entry-row__label">Identifiant</div>
+                                                <div class="entry-row__value">{{ entry.username ?: '—' }}</div>
+                                                <button type="button" class="entry-row__copy" data-copy-value="{{ entry.username|e('html_attr') }}">Copier</button>
+                                            </div>
+                                            <div class="entry-row">
+                                                <div class="entry-row__label">Mot de passe</div>
+                                                <div class="entry-row__value entry-row__value--secret" data-secret-value="{{ entry.password|e('html_attr') }}" data-secret-visible="false">
+                                                    <span class="entry-row__secret-text" data-secret-label>••••••••</span>
+                                                    <button type="button" class="entry-row__toggle" data-secret-toggle aria-label="Afficher le mot de passe" aria-pressed="false">
+                                                        <svg data-password-icon="show" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.8"/>
+                                                        </svg>
+                                                        <svg data-password-icon="hide" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+                                                            <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                                            <path d="M10.6 10.6a3 3 0 0 0 4.24 4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                                            <path d="M6.2 6.2C4 7.7 2.6 10 2 12c1.3 4.2 5 7 10 7 1.9 0 3.7-.4 5.2-1.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M9.4 4.3A10.7 10.7 0 0 1 12 4c6.4 0 10 8 10 8a19.2 19.2 0 0 1-3 4.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <button type="button" class="entry-row__copy" data-copy-value="{{ entry.password|e('html_attr') }}">Copier</button>
+                                            </div>
+                                            <div class="entry-row">
+                                                <div class="entry-row__label">URL</div>
+                                                <div class="entry-row__value">{{ entry.url ?: '—' }}</div>
+                                                <button type="button" class="entry-row__copy" data-copy-value="{{ entry.url|e('html_attr') }}">Copier</button>
+                                            </div>
+                                            <div class="entry-row">
+                                                <div class="entry-row__label">Notes</div>
+                                                <div class="entry-row__value entry-row__value--wrap">{{ entry.notes ?: '—' }}</div>
+                                                <button type="button" class="entry-row__copy" data-copy-value="{{ entry.notes|e('html_attr') }}">Copier</button>
+                                            </div>
+                                        </div>
+                                    </details>
+
+                                    <div class="entry-card__actions">
+                                        <a class="vault__button vault__button-link" href="{{ path('app_password_manager', { edit: entry.id }) }}">Modifier</a>
+                                        <form method="post" action="{{ path('app_password_manager_entry_delete', { id: entry.id }) }}">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_delete_' ~ entry.id) }}">
+                                            <button class="vault__button vault__button--ghost" type="submit" onclick="return confirm('Supprimer cette entrée ?');">Supprimer</button>
+                                        </form>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </section>
+
+            </div>
+        {% endif %}
+    </section>
+
+    {% if isUnlocked %}
+        <form method="post" action="{{ path('app_password_manager_lock') }}" class="vault__lockform" data-auto-lock-form>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_lock') }}">
+        </form>
+        <script>
+            (function () {
+                const root = document.querySelector('[data-vault-page]');
+                const form = document.querySelector('[data-auto-lock-form]');
+                if (!root || !form) {
+                    return;
+                }
+
+                const lockSeconds = Number(root.getAttribute('data-lock-seconds') || '180') * 1000;
+                let timer = null;
+
+                const setToggleState = (button, visible) => {
+                    const showIcon = button.querySelector('[data-password-icon="show"]');
+                    const hideIcon = button.querySelector('[data-password-icon="hide"]');
+
+                    if (showIcon) {
+                        showIcon.hidden = visible;
+                    }
+
+                    if (hideIcon) {
+                        hideIcon.hidden = !visible;
+                    }
+
+                    button.setAttribute('aria-pressed', visible ? 'true' : 'false');
+                    button.setAttribute('aria-label', visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+                };
+
+                const schedule = () => {
+                    clearTimeout(timer);
+                    timer = window.setTimeout(() => form.submit(), lockSeconds);
+                };
+
+                ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach((eventName) => {
+                    window.addEventListener(eventName, schedule, { passive: true });
+                });
+
+                schedule();
+
+                document.querySelectorAll('[data-copy-value]').forEach((button) => {
+                    button.addEventListener('click', async () => {
+                        const value = button.getAttribute('data-copy-value') || '';
+                        if (!value) {
+                            return;
+                        }
+
+                        try {
+                            await navigator.clipboard.writeText(value);
+                            button.textContent = 'Copié';
+                            window.setTimeout(() => {
+                                button.textContent = 'Copier';
+                            }, 1200);
+                            schedule();
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+                    const targetId = button.getAttribute('data-password-target');
+                    const input = targetId ? document.getElementById(targetId) : null;
+                    if (!input) {
+                        return;
+                    }
+
+                    setToggleState(button, false);
+
+                    button.addEventListener('click', () => {
+                        const shouldShow = 'password' === input.type;
+                        input.type = shouldShow ? 'text' : 'password';
+                        setToggleState(button, shouldShow);
+                    });
+                });
+
+                document.querySelectorAll('[data-secret-toggle]').forEach((button) => {
+                    const row = button.closest('[data-secret-value]');
+                    const label = row ? row.querySelector('[data-secret-label]') : null;
+                    if (!row || !label) {
+                        return;
+                    }
+
+                    const secret = row.getAttribute('data-secret-value') || '';
+                    const masked = '••••••••';
+
+                    const sync = (visible) => {
+                        row.setAttribute('data-secret-visible', visible ? 'true' : 'false');
+                        label.textContent = visible ? secret : masked;
+                        setToggleState(button, visible);
+                    };
+
+                    sync(false);
+
+                    button.addEventListener('click', () => {
+                        const visible = row.getAttribute('data-secret-visible') !== 'true';
+                        sync(visible);
+                    });
+                });
+
+                document.querySelectorAll('[data-audit-toggle]').forEach((button) => {
+                    button.addEventListener('click', () => {
+                        const card = button.closest('.vault__overview-card');
+                        const content = card ? card.querySelector('.audit-panel__content') : null;
+                        if (!content) {
+                            return;
+                        }
+
+                        const isHidden = content.hasAttribute('hidden');
+                        if (isHidden) {
+                            content.removeAttribute('hidden');
+                            button.textContent = 'Masquer';
+                        } else {
+                            content.setAttribute('hidden', '');
+                            button.textContent = 'Voir';
+                        }
+                    });
+                });
+            })();
+        </script>
+    {% endif %}
+{% endblock %}
+

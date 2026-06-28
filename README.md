@@ -112,6 +112,20 @@ Application web Symfony 6.4 pensee pour evoluer par modules independants, avec u
    ```
 8. Redemarrer le service web si necessaire apres le deploiement.
 
+## Demarrage prod local
+
+Pour lancer Symfony en mode prod sur ta machine Windows, depuis `webapp` :
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\start-prod.ps1
+```
+
+Ce script :
+- passe l'application en `APP_ENV=prod` et `APP_DEBUG=0`
+- cree `webapp/var/sessions` si besoin
+- stoppe un ancien `php.exe` sur le port `8000` si c'est bien lui qui bloque le port
+- demarre le serveur Symfony sur `http://127.0.0.1:8000`
+
 ## Notes
 
 - Aucun secret reel ne doit rester dans un fichier versionne.

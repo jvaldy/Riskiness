@@ -430,10 +430,10 @@ final class HomeController
     <main class="page">
         <div class="shell">
             <div class="headerline">
-                <div class="brand">
+                <a class="brand" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
                     <img class="brand__logo" src="/logo/riskiness-icon-degrade.svg" alt="Riskiness">
                     <span class="brand__name">RISKINESS</span>
-                </div>
+                </a>
                 <div class="headerline__actions">
                     <a class="headerline__button headerline__button--home" href="/" aria-label="Accueil" title="Accueil">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
