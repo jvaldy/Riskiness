@@ -1,92 +1,10 @@
-<?php
-
-namespace App\Controller;
-
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-
-final class ModulePageController
-{
-    #[Route('/password-manager', name: 'app_password_manager', methods: ['GET'])]
-    public function passwordManager(Security $security): Response
-    {
-        return new Response($this->render(
-            'Password Manager',
-            'Centraliser les accès, structurer les secrets et garder le contrôle dans une interface Riskiness cohérente.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    #[Route('/movie-tracker', name: 'app_movie_tracker', methods: ['GET'])]
-    public function movieTracker(Security $security): Response
-    {
-        return new Response($this->render(
-            'Movie Tracker',
-            'Suivre les films, organiser les listes et construire un module cinéphile prêt à grandir.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    #[Route('/budget-pulse', name: 'app_budget_pulse', methods: ['GET'])]
-    public function budgetPulse(Security $security): Response
-    {
-        return new Response($this->render(
-            'Budget Pulse',
-            'Piloter les revenus, les dépenses et les arbitrages financiers dans une vue claire et premium.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    #[Route('/recipe-atelier', name: 'app_recipe_atelier', methods: ['GET'])]
-    public function recipeAtelier(Security $security): Response
-    {
-        return new Response($this->render(
-            'Recipe Atelier',
-            'Organiser des recettes, structurer les ingrédients et retrouver rapidement chaque préparation.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    #[Route('/doc-sentinel', name: 'app_doc_sentinel', methods: ['GET'])]
-    public function docSentinel(Security $security): Response
-    {
-        return new Response($this->render(
-            'Doc Sentinel',
-            'Surveiller les dates d’expiration, les relances et les documents sensibles avec précision.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    #[Route('/cycle-care', name: 'app_cycle_care', methods: ['GET'])]
-    public function cycleCare(Security $security): Response
-    {
-        return new Response($this->render(
-            'Cycle Care',
-            'Suivre les cycles, les symptômes et le confort avec une expérience douce et discrète.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    private function render(string $title, string $description, string $accountHref, string $accountButtonClass): string
-    {
-        $safeTitle = htmlspecialchars($title, ENT_QUOTES);
-        $safeDescription = htmlspecialchars($description, ENT_QUOTES);
-
-        return <<<HTML
 <!doctype html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
-    <title>RISKINESS - {$safeTitle}</title>
+    <title>{% block title %}RISKINESS{% endblock %}</title>
     <style>
         :root {
             --brand-pink: #F5245E;
@@ -95,10 +13,12 @@ final class ModulePageController
             --bg-canvas: #0B0910;
             --bg-page: #120F17;
             --surface-1: #17131D;
+            --surface-2: #1D1724;
             --text-primary: #FFFFFF;
             --text-secondary: rgba(255, 255, 255, 0.72);
             --text-tertiary: rgba(255, 255, 255, 0.52);
             --border: rgba(255, 255, 255, 0.10);
+            --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.18);
             --shadow-md: 0 18px 48px rgba(0, 0, 0, 0.30);
             --radius-xl: 32px;
             --radius-pill: 999px;
@@ -115,12 +35,18 @@ final class ModulePageController
             background:
                 radial-gradient(circle at 15% 15%, rgba(245, 36, 94, 0.14), transparent 25%),
                 radial-gradient(circle at 85% 20%, rgba(255, 122, 61, 0.12), transparent 28%),
+                radial-gradient(circle at 50% 100%, rgba(245, 36, 94, 0.08), transparent 32%),
                 linear-gradient(180deg, var(--bg-canvas) 0%, var(--bg-page) 100%);
             padding-bottom: 52px;
         }
 
         a { color: inherit; text-decoration: none; }
-        .page { position: relative; overflow: clip; }
+        button, input { font: inherit; }
+
+        .page {
+            position: relative;
+            overflow: clip;
+        }
         .page::before,
         .page::after {
             content: '';
@@ -128,7 +54,7 @@ final class ModulePageController
             pointer-events: none;
             z-index: 0;
             filter: blur(18px);
-            opacity: 0.45;
+            opacity: 0.42;
         }
         .page::before {
             width: 420px;
@@ -165,6 +91,7 @@ final class ModulePageController
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-pill);
             background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
         }
         .headerline__actions {
             display: inline-flex;
@@ -191,8 +118,7 @@ final class ModulePageController
             background: rgba(255, 255, 255, 0.06);
             border-color: currentColor;
         }
-        .headerline__button svg,
-        .headerline__home svg {
+        .headerline__button svg {
             width: 22px;
             height: 22px;
             stroke-width: 1.9;
@@ -235,45 +161,76 @@ final class ModulePageController
             text-overflow: ellipsis;
         }
 
-        .hero {
-            margin: 32px 4px 22px;
+        .auth {
+            margin: 28px 4px 10px;
             padding: 26px;
-            border-radius: 32px;
+            border-radius: 36px;
             border: 1px solid var(--border);
             background:
-                radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 32%),
+                radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 34%),
                 radial-gradient(circle at left, rgba(245, 36, 94, 0.12), transparent 28%),
                 linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03)),
                 var(--surface-1);
             box-shadow: var(--shadow-md);
         }
-        .hero h1 {
-            margin: 0;
-            font-size: clamp(2rem, 4vw, 3rem);
-            line-height: 1;
+        .auth__eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .auth__eyebrow::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--brand-gradient);
+            box-shadow: 0 0 18px rgba(245, 36, 94, 0.45);
+        }
+        .auth__title {
+            margin: 12px 0 6px;
+            font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+            line-height: 1.05;
             letter-spacing: -0.05em;
         }
-        .hero .accent {
+        .auth__title .accent {
             background: var(--brand-gradient);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        .hero p {
-            margin: 14px 0 0;
+        .auth__lead {
+            margin: 0;
+            max-width: 62ch;
             color: var(--text-secondary);
             line-height: 1.65;
-            max-width: 64ch;
         }
-        .notice {
-            margin-top: 20px;
-            display: inline-flex;
-            padding: 8px 12px;
-            border-radius: var(--radius-pill);
+
+        .flash {
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             background: rgba(255, 255, 255, 0.03);
-            color: var(--text-tertiary);
-            font-size: 0.84rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .flash--success {
+            border-color: rgba(70, 255, 145, 0.14);
+            background: rgba(70, 255, 145, 0.07);
+            color: rgba(224, 255, 233, 0.94);
+        }
+        .flash--error {
+            border-color: rgba(255, 88, 104, 0.18);
+            background: rgba(255, 88, 104, 0.08);
+            color: rgba(255, 226, 231, 0.95);
         }
 
         .footer {
@@ -302,9 +259,8 @@ final class ModulePageController
             .brand__logo { max-width: 100%; height: 34px; }
             .brand__name { font-size: 0.98rem; }
             .headerline__button { width: 44px; height: 44px; border-radius: 16px; }
-            .headerline__button svg,
-            .headerline__home svg { width: 20px; height: 20px; }
-            .hero { padding: 20px; }
+            .headerline__button svg { width: 20px; height: 20px; }
+            .auth { padding: 18px; border-radius: 28px; }
             .footer { padding: 4px 10px; }
         }
     </style>
@@ -325,7 +281,7 @@ final class ModulePageController
                             <path d="M10 20v-5h4v5"/>
                         </svg>
                     </a>
-                    <a class="headerline__button {$accountButtonClass}" href="{$accountHref}" aria-label="Mon compte" title="Mon compte">
+                    <a class="headerline__button {{ app.user ? 'headerline__button--account-logged-in' : 'headerline__button--account-guest' }}" href="{{ app.user ? path('app_profile') : path('app_login') }}" aria-label="Mon compte" title="Mon compte">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
                             <circle cx="12" cy="8" r="3.5"/>
                             <path d="M5 20a7 7 0 0 1 14 0"/>
@@ -334,11 +290,7 @@ final class ModulePageController
                 </div>
             </div>
 
-            <section class="hero" aria-label="Module {$safeTitle}">
-                <h1><span class="accent">{$safeTitle}</span></h1>
-                <p>{$safeDescription}</p>
-                <div class="notice">Module en cours de structuration dans la charte centrale Riskiness.</div>
-            </section>
+            {% block content %}{% endblock %}
 
             <div class="footer">
                 <span>© 2026 Riskiness. Tous droits réservés.</span>
@@ -347,16 +299,3 @@ final class ModulePageController
     </main>
 </body>
 </html>
-HTML;
-    }
-
-    private function accountHref(Security $security): string
-    {
-        return $security->getUser() ? '/profile' : '/login';
-    }
-
-    private function accountButtonClass(Security $security): string
-    {
-        return $security->getUser() ? 'headerline__button--account-logged-in' : 'headerline__button--account-guest';
-    }
-}

@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController
 {
     #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function __invoke(): Response
+    public function __invoke(Security $security): Response
     {
         $modules = [
             [
@@ -18,6 +19,7 @@ final class HomeController
                 'tone' => 'pink',
                 'icon' => $this->iconGenerator(),
                 'href' => '/password-generator',
+                'locked' => false,
             ],
             [
                 'slug' => 'password-manager',
@@ -26,6 +28,7 @@ final class HomeController
                 'tone' => 'orange',
                 'icon' => $this->iconShield(),
                 'href' => '/password-manager',
+                'locked' => true,
             ],
             [
                 'slug' => 'movie-tracker',
@@ -34,6 +37,7 @@ final class HomeController
                 'tone' => 'ink',
                 'icon' => $this->iconFilm(),
                 'href' => '/movie-tracker',
+                'locked' => true,
             ],
             [
                 'slug' => 'budget-pulse',
@@ -42,6 +46,7 @@ final class HomeController
                 'tone' => 'pink',
                 'icon' => $this->iconWallet(),
                 'href' => '/budget-pulse',
+                'locked' => true,
             ],
             [
                 'slug' => 'recipe-atelier',
@@ -50,6 +55,7 @@ final class HomeController
                 'tone' => 'orange',
                 'icon' => $this->iconChefHat(),
                 'href' => '/recipe-atelier',
+                'locked' => true,
             ],
             [
                 'slug' => 'doc-sentinel',
@@ -58,6 +64,7 @@ final class HomeController
                 'tone' => 'ink',
                 'icon' => $this->iconFileClock(),
                 'href' => '/doc-sentinel',
+                'locked' => true,
             ],
             [
                 'slug' => 'cycle-care',
@@ -66,39 +73,38 @@ final class HomeController
                 'tone' => 'pink',
                 'icon' => $this->iconHeartPulse(),
                 'href' => '/cycle-care',
+                'locked' => true,
             ],
         ];
 
         return new Response(
-            $this->render($modules),
+            $this->render($modules, $this->accountHref($security), $this->accountButtonClass($security)),
             Response::HTTP_OK,
             ['Content-Type' => 'text/html; charset=UTF-8']
         );
     }
 
-    private function render(array $modules): string
+    private function render(array $modules, string $accountHref, string $accountButtonClass): string
     {
         $cards = '';
 
         foreach ($modules as $module) {
+            $lockBadge = !empty($module['locked'])
+                ? '<span class="module-card__lock" aria-hidden="true">' . $this->iconLock() . '</span>'
+                : '';
+
             $cards .= sprintf(
-                '<a class="module-card tone-%s" href="%s" aria-label="%s">
-                    <span class="module-card__icon">%s</span>
-                    <span class="module-card__content">
-                        <span class="module-card__title">%s</span>
-                        <span class="module-card__description">%s</span>
-                    </span>
-                </a>',
+                '<a class="module-card tone-%s%s" href="%s" aria-label="%s">%s<span class="module-card__icon">%s</span><span class="module-card__content"><span class="module-card__title">%s</span><span class="module-card__description">%s</span></span></a>',
                 htmlspecialchars($module['tone'], ENT_QUOTES),
+                !empty($module['locked']) ? ' module-card--locked' : '',
                 htmlspecialchars($module['href'], ENT_QUOTES),
                 htmlspecialchars($module['title'], ENT_QUOTES),
+                $lockBadge,
                 $module['icon'],
                 htmlspecialchars($module['title'], ENT_QUOTES),
                 htmlspecialchars($module['description'], ENT_QUOTES)
             );
         }
-
-        $copyrightYear = '2026';
 
         return <<<HTML
 <!doctype html>
@@ -138,7 +144,7 @@ final class HomeController
                 radial-gradient(circle at 85% 20%, rgba(255, 122, 61, 0.12), transparent 28%),
                 radial-gradient(circle at 50% 100%, rgba(245, 36, 94, 0.08), transparent 32%),
                 linear-gradient(180deg, var(--bg-canvas) 0%, var(--bg-page) 100%);
-            padding-bottom: 66px;
+            padding-bottom: 52px;
         }
 
         a { color: inherit; text-decoration: none; }
@@ -177,7 +183,7 @@ final class HomeController
             z-index: 1;
             width: min(calc(100% - 32px), var(--container));
             margin: 0 auto;
-            padding: 28px 0 28px;
+            padding: 28px 0 24px;
         }
 
         .headerline {
@@ -210,11 +216,30 @@ final class HomeController
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-primary);
             flex: none;
+            transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+        }
+        .headerline__button:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: currentColor;
         }
         .headerline__button svg {
             width: 22px;
             height: 22px;
             stroke-width: 1.9;
+        }
+        .headerline__button--home {
+            color: var(--text-primary);
+        }
+        .headerline__button--account-logged-in {
+            color: rgba(60, 196, 119, 0.92);
+            border-color: rgba(60, 196, 119, 0.22);
+            background: rgba(60, 196, 119, 0.08);
+        }
+        .headerline__button--account-guest {
+            color: rgba(255, 92, 107, 0.92);
+            border-color: rgba(255, 92, 107, 0.22);
+            background: rgba(255, 92, 107, 0.08);
         }
         .brand {
             display: inline-flex;
@@ -257,12 +282,6 @@ final class HomeController
             background-clip: text;
             color: transparent;
         }
-        .intro p {
-            margin: 14px 0 0;
-            max-width: 64ch;
-            color: var(--text-secondary);
-            line-height: 1.65;
-        }
 
         .grid {
             display: grid;
@@ -290,6 +309,9 @@ final class HomeController
             position: relative;
             overflow: hidden;
         }
+        .module-card--locked {
+            padding-top: 28px;
+        }
         .module-card::before {
             content: '';
             position: absolute;
@@ -304,6 +326,26 @@ final class HomeController
             box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34);
         }
         .module-card:hover::before { opacity: 1; }
+        .module-card__lock {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(11, 9, 16, 0.48);
+            color: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(8px);
+            z-index: 1;
+        }
+        .module-card__lock svg {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2;
+        }
         .module-card__icon {
             width: 68px;
             height: 68px;
@@ -348,13 +390,13 @@ final class HomeController
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 7px 14px;
-            background: rgba(11, 9, 16, 0.40);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            color: var(--text-tertiary);
-            font-size: 0.74rem;
-            line-height: 1.2;
+            padding: 5px 12px;
+            background: rgba(11, 9, 16, 0.24);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.34);
+            font-size: 0.70rem;
+            line-height: 1.15;
             text-align: center;
             letter-spacing: 0.01em;
             pointer-events: none;
@@ -372,7 +414,7 @@ final class HomeController
             .headerline__button svg { width: 20px; height: 20px; }
             .intro h2 { font-size: clamp(1.9rem, 10vw, 2.8rem); }
             .module-card { grid-column: span 12; min-height: 188px; }
-            .footer { padding: 6px 10px; }
+            .footer { padding: 4px 10px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -393,19 +435,19 @@ final class HomeController
                     <span class="brand__name">RISKINESS</span>
                 </div>
                 <div class="headerline__actions">
-                    <a class="headerline__button" href="/" aria-label="Accueil" title="Accueil">
+                    <a class="headerline__button headerline__button--home" href="/" aria-label="Accueil" title="Accueil">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
                             <path d="M3 11.5 12 4l9 7.5"/>
                             <path d="M6 10.5V20h12v-9.5"/>
                             <path d="M10 20v-5h4v5"/>
                         </svg>
                     </a>
-                    <button class="headerline__button" type="button" aria-label="Mon compte" title="Mon compte">
+                    <a class="headerline__button {$accountButtonClass}" href="{$accountHref}" aria-label="Mon compte" title="Mon compte">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
                             <circle cx="12" cy="8" r="3.5"/>
                             <path d="M5 20a7 7 0 0 1 14 0"/>
                         </svg>
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -420,7 +462,7 @@ final class HomeController
             </section>
 
             <div class="footer">
-                <span>© {$copyrightYear} Riskiness. Tous droits réservés.</span>
+                <span>© 2026 Riskiness. Tous droits réservés.</span>
             </div>
         </div>
     </main>
@@ -454,16 +496,6 @@ HTML;
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M7 20h10"/><path d="M8 20v-6.5A3.5 3.5 0 0 1 5 10a3.5 3.5 0 0 1 3.2-3.5A4.5 4.5 0 0 1 16 5.2a4 4 0 0 1 5 3.8A3.5 3.5 0 0 1 18.5 12H18v8H8z"/><path d="M10 11.5h4"/></svg>';
     }
 
-    private function iconCalendarClock(): string
-    {
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/><circle cx="15" cy="15" r="2.5"/><path d="M15 13.8v1.4l1 0.7"/></svg>';
-    }
-
-    private function iconShieldCheck(): string
-    {
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M12 3 4 6v5c0 5 3.2 8.7 8 10 4.8-1.3 8-5 8-10V6l-8-3z"/><path d="M9.2 12.3 11 14l4-4"/></svg>';
-    }
-
     private function iconFileClock(): string
     {
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><circle cx="15.5" cy="16.5" r="2.5"/><path d="M15.5 15.3v1.2l.8.5"/></svg>';
@@ -472,5 +504,20 @@ HTML;
     private function iconHeartPulse(): string
     {
         return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><path d="M12 21s-7-4.5-8.5-9.2C2.3 8.4 4.2 5.5 7 5.5c1.7 0 2.9.8 3.8 2 1-1.2 2.2-2 3.8-2 2.8 0 4.7 2.9 3.5 6.3C19 16.5 12 21 12 21z"/><path d="M6.5 12h2l1.2-2.2 1.7 4 1.3-2H17"/></svg>';
+    }
+
+    private function iconLock(): string
+    {
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
+    }
+
+    private function accountHref(Security $security): string
+    {
+        return $security->getUser() ? '/profile' : '/login';
+    }
+
+    private function accountButtonClass(Security $security): string
+    {
+        return $security->getUser() ? 'headerline__button--account-logged-in' : 'headerline__button--account-guest';
     }
 }

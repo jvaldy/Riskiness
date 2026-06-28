@@ -2,24 +2,21 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class PasswordGeneratorController
 {
     #[Route('/password-generator', name: 'app_password_generator', methods: ['GET'])]
-    public function __invoke(): Response
+    public function __invoke(Security $security): Response
     {
-        return new Response(
-            $this->render(),
-            Response::HTTP_OK,
-            ['Content-Type' => 'text/html; charset=UTF-8']
-        );
+        return new Response($this->render($this->accountHref($security), $this->accountButtonClass($security)), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    private function render(): string
+    private function render(string $accountHref, string $accountButtonClass): string
     {
-        return <<<'HTML'
+        return <<<HTML
 <!doctype html>
 <html lang="fr">
 <head>
@@ -35,7 +32,6 @@ final class PasswordGeneratorController
             --bg-canvas: #0B0910;
             --bg-page: #120F17;
             --surface-1: #17131D;
-            --surface-2: #1D1724;
             --text-primary: #FFFFFF;
             --text-secondary: rgba(255, 255, 255, 0.72);
             --text-tertiary: rgba(255, 255, 255, 0.52);
@@ -60,16 +56,12 @@ final class PasswordGeneratorController
                 radial-gradient(circle at 85% 20%, rgba(255, 122, 61, 0.12), transparent 28%),
                 radial-gradient(circle at 50% 100%, rgba(245, 36, 94, 0.08), transparent 32%),
                 linear-gradient(180deg, var(--bg-canvas) 0%, var(--bg-page) 100%);
-            padding-bottom: 66px;
+            padding-bottom: 52px;
         }
 
         a { color: inherit; text-decoration: none; }
         button, input { font: inherit; }
-
-        .page {
-            position: relative;
-            overflow: clip;
-        }
+        .page { position: relative; overflow: clip; }
         .page::before,
         .page::after {
             content: '';
@@ -101,7 +93,7 @@ final class PasswordGeneratorController
             z-index: 1;
             width: min(calc(100% - 32px), var(--container));
             margin: 0 auto;
-            padding: 28px 0 28px;
+            padding: 28px 0 24px;
         }
 
         .headerline {
@@ -123,7 +115,6 @@ final class PasswordGeneratorController
             flex: none;
             white-space: nowrap;
         }
-        .headerline__home,
         .headerline__button {
             display: inline-flex;
             align-items: center;
@@ -135,21 +126,30 @@ final class PasswordGeneratorController
             background: rgba(255, 255, 255, 0.03);
             color: var(--text-primary);
             flex: none;
-        }
-        .headerline__home,
-        .headerline__button {
             transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
         }
-        .headerline__home:hover {
+        .headerline__button:hover {
             transform: translateY(-1px);
             background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(245, 36, 94, 0.22);
+            border-color: currentColor;
         }
-        .headerline__button svg,
-        .headerline__home svg {
+        .headerline__button svg {
             width: 22px;
             height: 22px;
             stroke-width: 1.9;
+        }
+        .headerline__button--home {
+            color: var(--text-primary);
+        }
+        .headerline__button--account-logged-in {
+            color: rgba(60, 196, 119, 0.92);
+            border-color: rgba(60, 196, 119, 0.22);
+            background: rgba(60, 196, 119, 0.08);
+        }
+        .headerline__button--account-guest {
+            color: rgba(255, 92, 107, 0.92);
+            border-color: rgba(255, 92, 107, 0.22);
+            background: rgba(255, 92, 107, 0.08);
         }
         .brand {
             display: inline-flex;
@@ -410,13 +410,13 @@ final class PasswordGeneratorController
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 7px 14px;
-            background: rgba(11, 9, 16, 0.40);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            color: var(--text-tertiary);
-            font-size: 0.74rem;
-            line-height: 1.2;
+            padding: 5px 12px;
+            background: rgba(11, 9, 16, 0.24);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.34);
+            font-size: 0.70rem;
+            line-height: 1.15;
             text-align: center;
             letter-spacing: 0.01em;
             pointer-events: none;
@@ -431,16 +431,14 @@ final class PasswordGeneratorController
             .shell { width: min(calc(100% - 20px), var(--container)); }
             .brand__logo { max-width: 100%; height: 34px; }
             .brand__name { font-size: 0.98rem; }
-            .headerline__home,
             .headerline__button { width: 44px; height: 44px; border-radius: 16px; }
-            .headerline__home svg,
             .headerline__button svg { width: 20px; height: 20px; }
             .intro h2 { font-size: clamp(1.9rem, 10vw, 2.8rem); }
             .generator__panel { padding: 18px; border-radius: 28px; }
             .generator__actions-top { width: 100%; justify-content: stretch; }
             .generator__button { width: 100%; }
             .generator__status-row { align-items: flex-start; }
-            .footer { padding: 6px 10px; }
+            .footer { padding: 4px 10px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -461,19 +459,19 @@ final class PasswordGeneratorController
                     <span class="brand__name">RISKINESS</span>
                 </div>
                 <div class="headerline__actions">
-                    <a class="headerline__home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                    <a class="headerline__button headerline__button--home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
                             <path d="M3 11.5 12 4l9 7.5"/>
                             <path d="M6 10.5V20h12v-9.5"/>
                             <path d="M10 20v-5h4v5"/>
                         </svg>
                     </a>
-                    <button class="headerline__button" type="button" aria-label="Mon compte" title="Mon compte">
+                    <a class="headerline__button {$accountButtonClass}" href="{$accountHref}" aria-label="Mon compte" title="Mon compte">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
                             <circle cx="12" cy="8" r="3.5"/>
                             <path d="M5 20a7 7 0 0 1 14 0"/>
                         </svg>
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -494,17 +492,7 @@ final class PasswordGeneratorController
                     </div>
 
                     <div class="generator__display">
-                        <input
-                            class="generator__password"
-                            type="text"
-                            value=""
-                            readonly
-                            spellcheck="false"
-                            autocapitalize="off"
-                            autocomplete="off"
-                            aria-label="Mot de passe généré"
-                            data-password-output
-                        >
+                        <input class="generator__password" type="text" value="" readonly spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Mot de passe généré" data-password-output>
                         <div class="generator__status-row">
                             <span class="generator__status" data-copy-status>Le générateur produit automatiquement un mot de passe au chargement, puis à chaque changement de réglage.</span>
                         </div>
@@ -539,7 +527,7 @@ final class PasswordGeneratorController
                                 </label>
                                 <label class="toggle">
                                     <span class="toggle__label">
-                                        <span class="toggle__title">Symbols</span>
+                                        <span class="toggle__title">Symboles</span>
                                         <span class="toggle__text">Activer les caractères spéciaux.</span>
                                     </span>
                                     <input type="checkbox" checked data-option="symbols">
@@ -554,7 +542,6 @@ final class PasswordGeneratorController
                             </div>
                         </div>
                     </div>
-
                 </div>
             </section>
 
@@ -717,5 +704,15 @@ final class PasswordGeneratorController
 </body>
 </html>
 HTML;
+    }
+
+    private function accountHref(Security $security): string
+    {
+        return $security->getUser() ? '/profile' : '/login';
+    }
+
+    private function accountButtonClass(Security $security): string
+    {
+        return $security->getUser() ? 'headerline__button--account-logged-in' : 'headerline__button--account-guest';
     }
 }

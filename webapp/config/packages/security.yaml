@@ -1,0 +1,44 @@
+security:
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                csrf_parameter: _csrf_token
+                csrf_token_id: authenticate
+                default_target_path: app_profile
+            logout:
+                path: app_logout
+                target: app_home
+    access_control:
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/forgot-password$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/password-generator$, roles: PUBLIC_ACCESS }
+        - { path: ^/(password-manager|movie-tracker|budget-pulse|recipe-atelier|doc-sentinel|cycle-care), roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            App\Entity\User:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

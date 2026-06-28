@@ -1,0 +1,63 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Connexion{% endblock %}
+
+{% block content %}
+    <section class="auth" aria-label="Connexion">
+        <span class="auth__eyebrow">Accès sécurisé</span>
+        <h1 class="auth__title"><span class="accent">Connexion</span></h1>
+        <p class="auth__lead">Retrouve ton espace Riskiness pour accéder aux modules verrouillés.</p>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash flash--{{ label }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        {% if error %}
+            <div class="flash flash--error">
+                {% if error.messageKey in ['Invalid credentials.', 'Bad credentials.'] %}
+                    Identifiants incorrects.
+                {% else %}
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="auth-form" style="margin-top: 18px; display: grid; gap: 14px;">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <label style="display: grid; gap: 8px;">
+                <span style="color: var(--text-secondary); font-size: 0.88rem;">Email</span>
+                <input
+                    type="email"
+                    name="_username"
+                    value="{{ last_username }}"
+                    autocomplete="email"
+                    required
+                    style="width: 100%; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: var(--text-primary); padding: 14px 16px; outline: none;"
+                >
+            </label>
+
+            <label style="display: grid; gap: 8px;">
+                <span style="color: var(--text-secondary); font-size: 0.88rem;">Mot de passe</span>
+                <input
+                    type="password"
+                    name="_password"
+                    autocomplete="current-password"
+                    required
+                    style="width: 100%; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: var(--text-primary); padding: 14px 16px; outline: none;"
+                >
+            </label>
+
+            <button type="submit" style="border: 0; border-radius: 18px; padding: 14px 16px; color: #fff; background: var(--brand-gradient); font-weight: 700; box-shadow: 0 12px 28px rgba(245, 36, 94, 0.20); cursor: pointer;">
+                Se connecter
+            </button>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: space-between; color: var(--text-secondary); font-size: 0.88rem;">
+                <a href="{{ path('app_register') }}">Créer un compte</a>
+                <a href="{{ path('app_forgot_password_request') }}">Mot de passe oublié ?</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}
