@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
 
 #[ORM\Entity(repositoryClass: \App\Repository\ResetPasswordRequestRepository::class)]
-#[ORM\Table(name: 'reset_password_request')]
+#[ORM\Table(name: 'risk_reset_password_request')]
 class ResetPasswordRequest implements ResetPasswordRequestInterface
 {
     #[ORM\Id]

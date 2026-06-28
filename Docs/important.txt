@@ -32,7 +32,7 @@ Commandes utiles :
 Emplacements a modifier :
 - `webapp/.env.example` : template a versionner, a garder sans secret reel.
 - `webapp/.env.local` : valeurs locales privees, a creer a partir du template.
-- `webapp/.env.prod` : reference de production sans secret reel.
+- `webapp/.env.prod` : fichier de prod local a poser sur le serveur, non versionne.
 - `webapp/config/packages/framework.yaml` : la cle `APP_SECRET` est lue ici.
 - `webapp/public/index.php` : entree web de l'application.
 - `webapp/bin/console` : entree CLI pour les commandes de cache et de diagnostic.
@@ -42,7 +42,7 @@ Process dev :
 2. Aller dans le projet puis dans `webapp`.
 3. Copier le template vers le fichier local :
    `copy .env.example .env.local`
-4. Modifier `webapp/.env.local`.
+4. Modifier `webapp/.env` ou `webapp/.env.local`.
 5. Installer les dependances :
    `composer install`
 6. Lancer le serveur local :
@@ -56,7 +56,7 @@ Process prod :
 3. Definir `APP_ENV=prod`, `APP_DEBUG=0` et `APP_SECRET` dans l'environnement de la machine ou du conteneur.
 4. Installer les dependances de prod :
    `composer install --no-dev --optimize-autoloader`
-5. Si la prod repose sur des fichiers `.env`, partir de `webapp/.env.prod`.
+5. Si la prod repose sur des fichiers `.env`, utiliser `webapp/.env.prod` ou `webapp/.env.prod.local` sur le serveur.
 6. Compiler les env si necessaire :
    `composer dump-env prod`
 7. Vider le cache :
@@ -86,8 +86,9 @@ Notes :
 - Variables CSS de base : `webapp/config/design-system/riskiness.tokens.css`
 - Registre Lucide : `webapp/config/design-system/riskiness.icons.json`
 - Theme Tailwind : `webapp/config/design-system/tailwind.theme.json`
-- `webapp/.env` doit rester un template committable, sans secret reel.
+- `webapp/.env` est un fichier local non versionne.
 - `webapp/.env.example` sert de reference pour l'onboarding local.
-- `webapp/.env.prod` rend le mode prod explicite sans embarquer de secret reel.
-- En production, configure `APP_SECRET` via les variables d'environnement ou `webapp/.env.local` sur le serveur, jamais dans un fichier versionne.
+- `webapp/.env.dev` contient les overrides dev locaux et reste non versionne.
+- `webapp/.env.prod` doit rester local au serveur et ne pas etre commit.
+- En production, configure `APP_SECRET` via les variables d'environnement ou `webapp/.env.prod.local` sur le serveur, jamais dans un fichier versionne.
 - Si un secret a deja ete pousse sur Git, il faut aussi le faire tourner cote production.

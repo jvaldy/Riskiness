@@ -15,8 +15,11 @@ desktop.ini
 *.swo
 
 # Symfony / PHP
+/webapp/.env
+/webapp/.env.dev
 /webapp/.env.local
 /webapp/.env.*.local
+/webapp/.env.prod
 /webapp/var/
 /webapp/vendor/
 /webapp/public/bundles/

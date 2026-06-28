@@ -59,8 +59,8 @@ Application web Symfony 6.4 pensee pour evoluer par modules independants, avec u
    ```bash
    copy .env.example .env.local
    ```
-3. Modifier `webapp/.env.local` avec les valeurs locales si besoin.
-   - Ce fichier est le seul endroit a modifier pour les secrets ou overrides locaux.
+3. Modifier `webapp/.env` ou `webapp/.env.local` avec les valeurs locales si besoin.
+   - `webapp/.env.dev` peut porter des overrides dev specifiques.
    - Ne pas modifier `webapp/.env.example` pour la machine locale.
 4. Installer les dependances :
    ```bash
@@ -78,8 +78,10 @@ Application web Symfony 6.4 pensee pour evoluer par modules independants, avec u
 ## Emplacement des modifications
 
 - `webapp/.env.example` : template a versionner et a partager.
+- `webapp/.env` : fichier local de base, non versionne.
+- `webapp/.env.dev` : overrides dev locaux, non versionnes.
 - `webapp/.env.local` : configuration locale privee, non committee.
-- `webapp/.env.prod` : configuration de prod de reference, sans secret reel.
+- `webapp/.env.prod` : fichier de prod local a poser sur le serveur, non versionne.
 - `webapp/config/packages/framework.yaml` : lecture du `APP_SECRET` par Symfony.
 - `webapp/public/index.php` : point d'entree HTTP de l'application.
 
@@ -89,8 +91,8 @@ Application web Symfony 6.4 pensee pour evoluer par modules independants, avec u
 2. Preparer les valeurs de production dans l'environnement cible.
    - Definir `APP_ENV=prod`.
    - Definir `APP_DEBUG=0`.
-   - Definir `APP_SECRET` dans l'environnement du serveur ou dans `webapp/.env.local` cote serveur.
-3. Si tu deployes avec les fichiers `.env`, partir de `webapp/.env.prod` comme base de reference.
+   - Definir `APP_SECRET` dans l'environnement du serveur ou dans `webapp/.env.prod` cote serveur.
+3. Si tu deployes avec les fichiers `.env`, partir de `webapp/.env.prod` sur le serveur ou d'un `webapp/.env.prod.local` prive.
 4. Installer les dependances cote serveur :
    ```bash
    cd webapp
