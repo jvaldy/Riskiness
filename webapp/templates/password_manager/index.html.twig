@@ -245,6 +245,20 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
+        .vault__button--icon {
+            width: 46px;
+            min-width: 46px;
+            padding: 0;
+            gap: 0;
+        }
+
+        .vault__button--icon svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 1.9;
+            flex: none;
+        }
+
         .vault__grid {
             display: grid;
             gap: 16px;
@@ -463,6 +477,13 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .entry-card__icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 1.9;
+            flex: none;
         }
 
         .entry-details {
@@ -862,9 +883,8 @@
                 <section class="vault__panel vault__panel--full">
                     <div class="vault__section-head">
                         <h2 class="section-title">Entrées enregistrées</h2>
-                        <form method="get" action="{{ path('app_password_manager') }}" class="vault__searchform">
-                            <input class="vault__search" type="search" name="q" value="{{ query }}" placeholder="Rechercher un identifiant, un site, une note..." autocomplete="off">
-                            <button class="vault__button vault__button--ghost" type="submit">Rechercher</button>
+                        <form method="get" action="{{ path('app_password_manager') }}" class="vault__searchform" data-search-form>
+                            <input class="vault__search" type="search" name="q" value="{{ query }}" placeholder="Rechercher un identifiant, un site, une note..." autocomplete="off" data-search-input>
                         </form>
                     </div>
                     {% if entries is empty %}
@@ -926,10 +946,22 @@
                                     </details>
 
                                     <div class="entry-card__actions">
-                                        <a class="vault__button vault__button-link" href="{{ path('app_password_manager', { edit: entry.id }) }}">Modifier</a>
+                                        <a class="vault__button vault__button-link vault__button--icon" href="{{ path('app_password_manager', { edit: entry.id }) }}" aria-label="Modifier" title="Modifier">
+                                            <svg class="entry-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M12.5 4.5h-5A2.5 2.5 0 0 0 5 7v10A2.5 2.5 0 0 0 7.5 19.5h9A2.5 2.5 0 0 0 19 17v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                <path d="M18.25 3.75a1.8 1.8 0 0 1 2.55 2.55l-8.8 8.8-3.3.75.75-3.3 8.8-8.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            </svg>
+                                        </a>
                                         <form method="post" action="{{ path('app_password_manager_entry_delete', { id: entry.id }) }}">
                                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('password_vault_delete_' ~ entry.id) }}">
-                                            <button class="vault__button vault__button--ghost" type="submit" onclick="return confirm('Supprimer cette entrée ?');">Supprimer</button>
+                                            <button class="vault__button vault__button--ghost vault__button--icon" type="submit" aria-label="Supprimer" title="Supprimer" onclick="return confirm('Supprimer cette entrée ?');">
+                                                <svg class="entry-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                    <path d="M4 7h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                                                    <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                                                    <path d="M7 7l1 13h8l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                    <path d="M10 11v5M14 11v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                                                </svg>
+                                            </button>
                                         </form>
                                     </div>
                                 </article>
@@ -950,6 +982,8 @@
             (function () {
                 const root = document.querySelector('[data-vault-page]');
                 const form = document.querySelector('[data-auto-lock-form]');
+                const searchForm = document.querySelector('[data-search-form]');
+                const searchInput = document.querySelector('[data-search-input]');
                 if (!root || !form) {
                     return;
                 }
@@ -983,6 +1017,16 @@
                 });
 
                 schedule();
+
+                if (searchForm && searchInput) {
+                    let searchTimer = null;
+                    const submitSearch = () => {
+                        clearTimeout(searchTimer);
+                        searchTimer = window.setTimeout(() => searchForm.submit(), 250);
+                    };
+
+                    searchInput.addEventListener('input', submitSearch);
+                }
 
                 document.querySelectorAll('[data-copy-value]').forEach((button) => {
                     button.addEventListener('click', async () => {
