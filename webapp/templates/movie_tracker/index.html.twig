@@ -1,0 +1,1225 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Movie Tracker{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .tracker {
+        margin: 28px 4px 10px;
+        display: grid;
+        gap: 18px;
+    }
+
+    .tracker-panel {
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 34%),
+            radial-gradient(circle at left, rgba(245, 36, 94, 0.10), transparent 30%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+            var(--surface-1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .tracker-hero {
+        padding: 26px;
+    }
+
+    .tracker-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .tracker-eyebrow::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--brand-gradient);
+        box-shadow: 0 0 18px rgba(245, 36, 94, 0.55);
+    }
+
+    .tracker-title {
+        margin: 14px 0 8px;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .tracker-title .accent {
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .tracker-lead {
+        margin: 0;
+        max-width: 780px;
+        color: var(--text-secondary);
+        line-height: 1.65;
+    }
+
+    .tracker-layout {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.92fr) minmax(420px, 1.38fr);
+        gap: 18px;
+        align-items: start;
+    }
+
+    .tracker-card {
+        padding: 18px;
+    }
+
+    .tracker-card__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .tracker-card__title {
+        margin: 0;
+        color: var(--text-primary);
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    .tracker-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 26px;
+        padding: 0 10px;
+        border-radius: var(--radius-pill);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .tracker-form {
+        display: grid;
+        gap: 12px;
+    }
+
+    .tracker-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .tracker-field {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .tracker-field--full {
+        grid-column: 1 / -1;
+    }
+
+    .tracker-field[hidden] {
+        display: none !important;
+    }
+
+    .tracker-label {
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .tracker-input,
+    .tracker-textarea,
+    .tracker-choice__button {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--text-primary);
+        outline: none;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .tracker-input,
+    .tracker-textarea {
+        padding: 0 13px;
+    }
+
+    .tracker-input::placeholder,
+    .tracker-textarea::placeholder {
+        color: rgba(255, 255, 255, 0.36);
+    }
+
+    .tracker-input:hover,
+    .tracker-textarea:hover,
+    .tracker-choice__button:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.065);
+    }
+
+    .tracker-input:focus,
+    .tracker-textarea:focus,
+    .tracker-choice[data-open="true"] .tracker-choice__button,
+    .tracker-choice__button:focus-visible {
+        border-color: rgba(245, 36, 94, 0.78);
+        box-shadow: 0 0 0 4px rgba(245, 36, 94, 0.14);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .tracker-textarea {
+        min-height: 88px;
+        padding-top: 12px;
+        resize: vertical;
+    }
+
+    .tracker-choice {
+        position: relative;
+    }
+
+    .tracker-choice__button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 12px;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .tracker-choice__value {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tracker-choice__chevron {
+        width: 17px;
+        height: 17px;
+        color: rgba(255, 255, 255, 0.62);
+        transition: transform 180ms ease;
+        flex: none;
+    }
+
+    .tracker-choice[data-open="true"] .tracker-choice__chevron {
+        transform: rotate(180deg);
+    }
+
+    .tracker-choice__menu {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 8px);
+        z-index: 20;
+        display: none;
+        max-height: 250px;
+        overflow: auto;
+        padding: 7px;
+        border: 1px solid rgba(245, 36, 94, 0.28);
+        border-radius: 17px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.16), transparent 38%),
+            #100B14;
+        box-shadow: 0 20px 44px rgba(0, 0, 0, 0.42);
+    }
+
+    .tracker-choice[data-open="true"] .tracker-choice__menu {
+        display: grid;
+        gap: 4px;
+    }
+
+    .tracker-choice__option {
+        width: 100%;
+        min-height: 38px;
+        padding: 0 11px;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 0.84rem;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+        transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .tracker-choice__option:hover,
+    .tracker-choice__option:focus-visible {
+        background: rgba(245, 36, 94, 0.16);
+        color: #fff;
+        outline: none;
+    }
+
+    .tracker-choice__option[aria-selected="true"] {
+        background: linear-gradient(135deg, rgba(245, 36, 94, 0.92), rgba(255, 122, 61, 0.78));
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(245, 36, 94, 0.18);
+    }
+
+    .tracker-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+    }
+
+    .tracker-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.86rem;
+        font-weight: 800;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+
+    .tracker-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.075);
+    }
+
+    .tracker-button--primary {
+        border-color: transparent;
+        background: var(--brand-gradient);
+        box-shadow: 0 14px 30px rgba(245, 36, 94, 0.20);
+    }
+
+    .tracker-button--ghost {
+        color: var(--text-secondary);
+    }
+
+    .tracker-button svg,
+    .tracker-icon-button svg {
+        width: 17px;
+        height: 17px;
+        stroke-width: 2;
+    }
+
+    .tracker-toolbar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .tracker-search {
+        position: relative;
+    }
+
+    .tracker-search svg {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        width: 17px;
+        height: 17px;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.44);
+        pointer-events: none;
+    }
+
+    .tracker-search .tracker-input {
+        padding-left: 40px;
+    }
+
+    .tracker-list {
+        display: grid;
+        gap: 7px;
+        max-height: 680px;
+        overflow: auto;
+        padding-right: 4px;
+    }
+
+    .tracker-empty {
+        display: grid;
+        place-items: center;
+        min-height: 180px;
+        border: 1px dashed rgba(255, 255, 255, 0.13);
+        border-radius: 20px;
+        color: var(--text-tertiary);
+        text-align: center;
+        line-height: 1.6;
+        padding: 22px;
+    }
+
+    .tracker-item {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.035);
+        overflow: hidden;
+        transition: border-color 180ms ease, background 180ms ease;
+    }
+
+    .tracker-item:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.052);
+    }
+
+    .tracker-item__summary {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr) auto;
+        gap: 11px;
+        align-items: center;
+        width: 100%;
+        min-height: 58px;
+        padding: 8px 10px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .tracker-item__mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--brand-orange);
+        flex: none;
+    }
+
+    .tracker-item__mark svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+    }
+
+    .tracker-item__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        color: var(--text-primary);
+        font-weight: 800;
+    }
+
+    .tracker-item__title span:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .tracker-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 21px;
+        padding: 0 8px;
+        border-radius: var(--radius-pill);
+        background: rgba(245, 36, 94, 0.12);
+        color: rgba(255, 229, 237, 0.9);
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+    }
+
+    .tracker-item__meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        color: var(--text-tertiary);
+        font-size: 0.78rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tracker-item__chevron {
+        width: 18px;
+        height: 18px;
+        color: rgba(255, 255, 255, 0.52);
+        transition: transform 180ms ease;
+    }
+
+    .tracker-item[data-expanded="true"] .tracker-item__chevron {
+        transform: rotate(180deg);
+    }
+
+    .tracker-item__details {
+        display: none;
+        padding: 0 12px 12px 57px;
+    }
+
+    .tracker-item[data-expanded="true"] .tracker-item__details {
+        display: grid;
+        gap: 12px;
+    }
+
+    .tracker-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .tracker-detail {
+        min-width: 0;
+        padding: 10px 11px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+
+    .tracker-detail strong {
+        display: block;
+        margin-bottom: 2px;
+        color: var(--text-tertiary);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .tracker-item__actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .tracker-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .tracker-icon-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(245, 36, 94, 0.42);
+        background: rgba(245, 36, 94, 0.10);
+    }
+
+    .tracker-icon-button--danger:hover {
+        border-color: rgba(255, 92, 107, 0.42);
+        background: rgba(255, 92, 107, 0.10);
+        color: #ffb9c2;
+    }
+
+    @media (max-width: 980px) {
+        .tracker-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .tracker {
+            margin-top: 20px;
+            gap: 14px;
+        }
+
+        .tracker-hero,
+        .tracker-card {
+            padding: 16px;
+            border-radius: 24px;
+        }
+
+        .tracker-grid,
+        .tracker-toolbar,
+        .tracker-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tracker-item__summary {
+            grid-template-columns: 32px minmax(0, 1fr) auto;
+            gap: 9px;
+            min-height: 56px;
+            padding: 8px;
+        }
+
+        .tracker-item__mark {
+            width: 31px;
+            height: 31px;
+            border-radius: 11px;
+        }
+
+        .tracker-item__details {
+            padding-left: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section
+    class="tracker"
+    data-movie-tracker
+    data-entries-url="{{ path('app_movie_tracker_entries') }}"
+    data-save-url="{{ path('app_movie_tracker_entry_save') }}"
+    data-delete-url-template="{{ path('app_movie_tracker_entry_delete', { id: 0 }) }}"
+    data-csrf-token="{{ csrf_token('movie_tracker_entry') }}"
+>
+    <section class="tracker-panel tracker-hero" aria-labelledby="movie-tracker-title">
+        <span class="tracker-eyebrow">Movie Tracker</span>
+        <h1 class="tracker-title" id="movie-tracker-title"><span class="accent">Movie Tracker</span></h1>
+        <p class="tracker-lead">Gere ton historique de films, de series, de livres, d'animes ou de videos en quelques secondes.</p>
+    </section>
+
+    <div class="tracker-layout">
+        <section class="tracker-panel tracker-card" aria-labelledby="movie-tracker-form-title">
+            <div class="tracker-card__head">
+                <h2 class="tracker-card__title" id="movie-tracker-form-title">Ajouter en quelques secondes</h2>
+                <span class="tracker-count" data-form-mode>Nouveau</span>
+            </div>
+
+            <form class="tracker-form" data-tracker-form autocomplete="off">
+                <input type="hidden" name="entryId" data-entry-id>
+
+                <div class="tracker-grid">
+                    <div class="tracker-field">
+                        <span class="tracker-label">Type de contenu</span>
+                        <div class="tracker-choice" data-choice="type" data-value="film">
+                            <button class="tracker-choice__button" type="button" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="tracker-choice__value">Film</span>
+                                <svg class="tracker-choice__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </button>
+                            <div class="tracker-choice__menu" role="listbox">
+                                <button class="tracker-choice__option" type="button" data-value="film" role="option" aria-selected="true">Film</button>
+                                <button class="tracker-choice__option" type="button" data-value="series" role="option" aria-selected="false">Serie</button>
+                                <button class="tracker-choice__option" type="button" data-value="book" role="option" aria-selected="false">Livre</button>
+                                <button class="tracker-choice__option" type="button" data-value="anime" role="option" aria-selected="false">Anime</button>
+                                <button class="tracker-choice__option" type="button" data-value="video" role="option" aria-selected="false">Video</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="tracker-field">
+                        <span class="tracker-label">Titre</span>
+                        <input class="tracker-input" type="text" name="title" placeholder="Titre du contenu" required data-title-input>
+                    </label>
+
+                    <div class="tracker-field">
+                        <span class="tracker-label">Etat</span>
+                        <div class="tracker-choice" data-choice="state" data-value="planned">
+                            <button class="tracker-choice__button" type="button" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="tracker-choice__value">A commencer</span>
+                                <svg class="tracker-choice__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </button>
+                            <div class="tracker-choice__menu" role="listbox">
+                                <button class="tracker-choice__option" type="button" data-value="planned" role="option" aria-selected="true">A commencer</button>
+                                <button class="tracker-choice__option" type="button" data-value="progress" role="option" aria-selected="false">En cours</button>
+                                <button class="tracker-choice__option" type="button" data-value="paused" role="option" aria-selected="false">En pause</button>
+                                <button class="tracker-choice__option" type="button" data-value="waiting" role="option" aria-selected="false">En attente</button>
+                                <button class="tracker-choice__option" type="button" data-value="done" role="option" aria-selected="false">Termine</button>
+                                <button class="tracker-choice__option" type="button" data-value="dropped" role="option" aria-selected="false">Abandonne</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="tracker-field" data-field="waitingDate" hidden>
+                        <span class="tracker-label">Date d'attente</span>
+                        <input class="tracker-input" type="date" name="waitingDate">
+                    </label>
+
+                    <label class="tracker-field" data-field="animeFormat" hidden>
+                        <span class="tracker-label">Format anime</span>
+                        <div class="tracker-choice" data-choice="animeFormat" data-value="series">
+                            <button class="tracker-choice__button" type="button" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="tracker-choice__value">Anime en serie</span>
+                                <svg class="tracker-choice__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </button>
+                            <div class="tracker-choice__menu" role="listbox">
+                                <button class="tracker-choice__option" type="button" data-value="series" role="option" aria-selected="true">Anime en serie</button>
+                                <button class="tracker-choice__option" type="button" data-value="movie" role="option" aria-selected="false">Film anime</button>
+                            </div>
+                        </div>
+                    </label>
+
+                    <label class="tracker-field" data-field="season" hidden>
+                        <span class="tracker-label">Saison</span>
+                        <input class="tracker-input" type="number" name="season" min="0" placeholder="Saison 2">
+                    </label>
+
+                    <label class="tracker-field" data-field="episode" hidden>
+                        <span class="tracker-label">Episode</span>
+                        <input class="tracker-input" type="number" name="episode" min="0" placeholder="Episode 8">
+                    </label>
+
+                    <label class="tracker-field" data-field="timeCode">
+                        <span class="tracker-label">Heure, minute, seconde</span>
+                        <input class="tracker-input" type="text" name="timeCode" inputmode="numeric" placeholder="00:00:00">
+                    </label>
+
+                    <label class="tracker-field" data-field="source" hidden>
+                        <span class="tracker-label">Source / createur</span>
+                        <input class="tracker-input" type="text" name="source" placeholder="YouTube, Twitch, Squeezie...">
+                    </label>
+
+                    <label class="tracker-field" data-field="bookPoint" hidden>
+                        <span class="tracker-label">Tome ou chapitre</span>
+                        <input class="tracker-input" type="text" name="bookPoint" placeholder="Tome 2 / chapitre 14">
+                    </label>
+
+                    <label class="tracker-field tracker-field--full">
+                        <span class="tracker-label">Note optionnelle</span>
+                        <textarea class="tracker-textarea" name="notes" placeholder="Ce qu'il faut retenir..."></textarea>
+                    </label>
+
+                    <label class="tracker-field tracker-field--full">
+                        <span class="tracker-label">Tags optionnels</span>
+                        <input class="tracker-input" type="text" name="tags" placeholder="action, attente, a revoir...">
+                    </label>
+                </div>
+
+                <div class="tracker-actions">
+                    <button class="tracker-button tracker-button--primary" type="submit" data-save-button>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/>
+                            <path d="M17 21v-8H7v8"/>
+                            <path d="M7 3v5h8"/>
+                        </svg>
+                        Enregistrer
+                    </button>
+                    <button class="tracker-button tracker-button--ghost" type="button" data-reset-button>Annuler</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="tracker-panel tracker-card" aria-labelledby="movie-tracker-list-title">
+            <div class="tracker-card__head">
+                <h2 class="tracker-card__title" id="movie-tracker-list-title">Entrees enregistrees</h2>
+                <span class="tracker-count" data-entry-count>0</span>
+            </div>
+
+            <div class="tracker-toolbar">
+                <label class="tracker-search">
+                    <span class="tracker-label" hidden>Recherche</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.3-4.3"/>
+                    </svg>
+                    <input class="tracker-input" type="search" placeholder="Rechercher un titre, un tag, un etat..." data-search-input>
+                </label>
+                <button class="tracker-button tracker-button--ghost" type="button" data-clear-button>Reinitialiser</button>
+            </div>
+
+            <div class="tracker-list" data-entry-list></div>
+        </section>
+    </div>
+</section>
+
+<script>
+(() => {
+    const root = document.querySelector('[data-movie-tracker]');
+    if (!root) {
+        return;
+    }
+
+    const form = root.querySelector('[data-tracker-form]');
+    const entryIdInput = root.querySelector('[data-entry-id]');
+    const formMode = root.querySelector('[data-form-mode]');
+    const list = root.querySelector('[data-entry-list]');
+    const count = root.querySelector('[data-entry-count]');
+    const searchInput = root.querySelector('[data-search-input]');
+    const clearButton = root.querySelector('[data-clear-button]');
+    const resetButton = root.querySelector('[data-reset-button]');
+
+    const labels = {
+        type: {
+            film: 'Film',
+            series: 'Serie',
+            book: 'Livre',
+            anime: 'Anime',
+            video: 'Video'
+        },
+        state: {
+            planned: 'A commencer',
+            progress: 'En cours',
+            paused: 'En pause',
+            waiting: 'En attente',
+            done: 'Termine',
+            dropped: 'Abandonne'
+        },
+        animeFormat: {
+            series: 'Anime en serie',
+            movie: 'Film anime'
+        }
+    };
+
+    const icons = {
+        film: '<path d="M6 3v18"/><path d="M18 3v18"/><path d="M3 8h18"/><path d="M3 16h18"/><rect x="3" y="3" width="18" height="18" rx="2"/>',
+        series: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m8 3 4 4 4-4"/>',
+        book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/>',
+        anime: '<path d="M12 3c4.5 0 8 3.2 8 7.2 0 4.3-3.6 7.8-8 7.8s-8-3.5-8-7.8C4 6.2 7.5 3 12 3Z"/><path d="M9 11h.01"/><path d="M15 11h.01"/><path d="M9.5 15c1.6 1 3.4 1 5 0"/>',
+        video: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3V9Z"/>'
+    };
+
+    let entries = [];
+
+    async function fetchEntries() {
+        const response = await fetch(root.dataset.entriesUrl, {
+            headers: {
+                Accept: 'application/json'
+            }
+        });
+
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Unable to load movie tracker entries.');
+        }
+
+        const payload = await response.json();
+        entries = Array.isArray(payload.entries) ? payload.entries : [];
+        renderList();
+    }
+
+    async function saveEntry(entry) {
+        const response = await fetch(root.dataset.saveUrl, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': root.dataset.csrfToken
+            },
+            body: JSON.stringify(entry)
+        });
+
+        if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || 'Unable to save movie tracker entry.');
+        }
+
+        return response.json();
+    }
+
+    async function deleteEntry(id) {
+        const url = root.dataset.deleteUrlTemplate.replace(/0$/, encodeURIComponent(id));
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'X-CSRF-Token': root.dataset.csrfToken
+            }
+        });
+
+        if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || 'Unable to delete movie tracker entry.');
+        }
+    }
+
+    function getChoice(name) {
+        const choice = root.querySelector(`[data-choice="${name}"]`);
+        return choice ? choice.dataset.value : '';
+    }
+
+    function setChoice(name, value) {
+        const choice = root.querySelector(`[data-choice="${name}"]`);
+        if (!choice) {
+            return;
+        }
+
+        choice.dataset.value = value;
+        const valueNode = choice.querySelector('.tracker-choice__value');
+        valueNode.textContent = labels[name][value] || value;
+
+        choice.querySelectorAll('.tracker-choice__option').forEach((option) => {
+            option.setAttribute('aria-selected', option.dataset.value === value ? 'true' : 'false');
+        });
+
+        choice.dataset.open = 'false';
+        choice.querySelector('.tracker-choice__button').setAttribute('aria-expanded', 'false');
+    }
+
+    function setFieldVisible(name, visible) {
+        const field = root.querySelector(`[data-field="${name}"]`);
+        if (!field) {
+            return;
+        }
+
+        field.hidden = !visible;
+        field.querySelectorAll('input, textarea, button').forEach((control) => {
+            control.disabled = !visible;
+        });
+    }
+
+    function updateDynamicFields() {
+        const type = getChoice('type');
+        const state = getChoice('state');
+        const animeFormat = getChoice('animeFormat');
+        const isSeriesLike = type === 'series' || (type === 'anime' && animeFormat === 'series');
+
+        setFieldVisible('waitingDate', state === 'waiting');
+        setFieldVisible('animeFormat', type === 'anime');
+        setFieldVisible('season', isSeriesLike);
+        setFieldVisible('episode', isSeriesLike);
+        setFieldVisible('timeCode', type === 'film' || type === 'series' || type === 'anime' || type === 'video');
+        setFieldVisible('source', type === 'video');
+        setFieldVisible('bookPoint', type === 'book');
+    }
+
+    function resetForm() {
+        form.reset();
+        entryIdInput.value = '';
+        setChoice('type', 'film');
+        setChoice('state', 'planned');
+        setChoice('animeFormat', 'series');
+        formMode.textContent = 'Nouveau';
+        updateDynamicFields();
+        root.querySelector('[data-title-input]').focus();
+    }
+
+    function readForm() {
+        const data = new FormData(form);
+        const now = new Date().toISOString();
+        const existingId = entryIdInput.value;
+
+        return {
+            id: existingId,
+            type: getChoice('type'),
+            title: String(data.get('title') || '').trim(),
+            state: getChoice('state'),
+            waitingDate: String(data.get('waitingDate') || '').trim(),
+            animeFormat: getChoice('animeFormat'),
+            season: String(data.get('season') || '').trim(),
+            episode: String(data.get('episode') || '').trim(),
+            timeCode: String(data.get('timeCode') || '').trim(),
+            source: String(data.get('source') || '').trim(),
+            bookPoint: String(data.get('bookPoint') || '').trim(),
+            notes: String(data.get('notes') || '').trim(),
+            tags: String(data.get('tags') || '').trim(),
+            createdAt: existingId ? (entries.find((entry) => entry.id === existingId)?.createdAt || now) : now,
+            updatedAt: now
+        };
+    }
+
+    function fillForm(entry) {
+        entryIdInput.value = entry.id;
+        setChoice('type', entry.type || 'film');
+        setChoice('state', entry.state || 'planned');
+        setChoice('animeFormat', entry.animeFormat || 'series');
+        form.elements.title.value = entry.title || '';
+        form.elements.waitingDate.value = entry.waitingDate || '';
+        form.elements.season.value = entry.season || '';
+        form.elements.episode.value = entry.episode || '';
+        form.elements.timeCode.value = entry.timeCode || '';
+        form.elements.source.value = entry.source || '';
+        form.elements.bookPoint.value = entry.bookPoint || '';
+        form.elements.notes.value = entry.notes || '';
+        form.elements.tags.value = entry.tags || '';
+        formMode.textContent = 'Edition';
+        updateDynamicFields();
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        root.querySelector('[data-title-input]').focus();
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return '';
+        }
+
+        const parts = value.split('-');
+        return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : value;
+    }
+
+    function compactMeta(entry) {
+        const parts = [labels.state[entry.state] || entry.state];
+
+        if (entry.state === 'waiting' && entry.waitingDate) {
+            parts.push(`Attente ${formatDate(entry.waitingDate)}`);
+        }
+
+        if (entry.type === 'series') {
+            const progress = [entry.season && `S${entry.season}`, entry.episode && `E${entry.episode}`].filter(Boolean).join(' ');
+            if (progress) {
+                parts.push(progress);
+            }
+        }
+
+        if (entry.type === 'anime') {
+            parts.push(labels.animeFormat[entry.animeFormat] || 'Anime');
+            if (entry.animeFormat === 'series') {
+                const progress = [entry.season && `S${entry.season}`, entry.episode && `E${entry.episode}`].filter(Boolean).join(' ');
+                if (progress) {
+                    parts.push(progress);
+                }
+            }
+        }
+
+        if (entry.type === 'book' && entry.bookPoint) {
+            parts.push(entry.bookPoint);
+        }
+
+        if (entry.type === 'video' && entry.source) {
+            parts.push(entry.source);
+        }
+
+        if (entry.timeCode) {
+            parts.push(entry.timeCode);
+        }
+
+        return parts.filter(Boolean).join(' · ');
+    }
+
+    function detailBlocks(entry) {
+        const details = [
+            ['Type', labels.type[entry.type] || entry.type],
+            ['Etat', labels.state[entry.state] || entry.state]
+        ];
+
+        if (entry.state === 'waiting' && entry.waitingDate) {
+            details.push(["Date d'attente", formatDate(entry.waitingDate)]);
+        }
+
+        if (entry.type === 'anime') {
+            details.push(['Format anime', labels.animeFormat[entry.animeFormat] || 'Anime']);
+        }
+
+        if (entry.season) {
+            details.push(['Saison', entry.season]);
+        }
+
+        if (entry.episode) {
+            details.push(['Episode', entry.episode]);
+        }
+
+        if (entry.timeCode) {
+            details.push(['Temps', entry.timeCode]);
+        }
+
+        if (entry.source) {
+            details.push(['Source / createur', entry.source]);
+        }
+
+        if (entry.bookPoint) {
+            details.push(['Tome / chapitre', entry.bookPoint]);
+        }
+
+        if (entry.tags) {
+            details.push(['Tags', entry.tags]);
+        }
+
+        if (entry.notes) {
+            details.push(['Note', entry.notes]);
+        }
+
+        return details.map(([label, value]) => `
+            <div class="tracker-detail">
+                <strong>${escapeHtml(label)}</strong>
+                ${escapeHtml(value)}
+            </div>
+        `).join('');
+    }
+
+    function renderList() {
+        const query = searchInput.value.trim().toLowerCase();
+        const filtered = entries
+            .filter((entry) => {
+                const searchable = [
+                    entry.title,
+                    labels.type[entry.type],
+                    labels.state[entry.state],
+                    entry.source,
+                    entry.tags,
+                    entry.notes
+                ].join(' ').toLowerCase();
+
+                return !query || searchable.includes(query);
+            })
+            .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+        count.textContent = String(entries.length);
+
+        if (filtered.length === 0) {
+            list.innerHTML = `
+                <div class="tracker-empty">
+                    <span>${entries.length === 0 ? 'Aucune entree pour le moment.' : 'Aucun resultat pour cette recherche.'}</span>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = filtered.map((entry) => `
+            <article class="tracker-item" data-entry="${escapeHtml(entry.id)}">
+                <button class="tracker-item__summary" type="button" data-toggle-entry="${escapeHtml(entry.id)}">
+                    <span class="tracker-item__mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${icons[entry.type] || icons.film}</svg>
+                    </span>
+                    <span>
+                        <span class="tracker-item__title">
+                            <span>${escapeHtml(entry.title)}</span>
+                            <span class="tracker-pill">${escapeHtml(labels.type[entry.type] || entry.type)}</span>
+                        </span>
+                        <span class="tracker-item__meta">${escapeHtml(compactMeta(entry))}</span>
+                    </span>
+                    <svg class="tracker-item__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <div class="tracker-item__details">
+                    <div class="tracker-detail-grid">${detailBlocks(entry)}</div>
+                    <div class="tracker-item__actions">
+                        <button class="tracker-icon-button" type="button" data-edit-entry="${escapeHtml(entry.id)}" aria-label="Modifier ${escapeHtml(entry.title)}" title="Modifier">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 20h9"/>
+                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                            </svg>
+                        </button>
+                        <button class="tracker-icon-button tracker-icon-button--danger" type="button" data-delete-entry="${escapeHtml(entry.id)}" aria-label="Supprimer ${escapeHtml(entry.title)}" title="Supprimer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3 6h18"/>
+                                <path d="M8 6V4h8v2"/>
+                                <path d="M19 6l-1 14H6L5 6"/>
+                                <path d="M10 11v5"/>
+                                <path d="M14 11v5"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+    }
+
+    root.querySelectorAll('[data-choice]').forEach((choice) => {
+        const trigger = choice.querySelector('.tracker-choice__button');
+        const options = choice.querySelectorAll('.tracker-choice__option');
+        const name = choice.dataset.choice;
+
+        trigger.addEventListener('click', () => {
+            const isOpen = choice.dataset.open === 'true';
+            root.querySelectorAll('[data-choice]').forEach((otherChoice) => {
+                otherChoice.dataset.open = 'false';
+                otherChoice.querySelector('.tracker-choice__button').setAttribute('aria-expanded', 'false');
+            });
+            choice.dataset.open = isOpen ? 'false' : 'true';
+            trigger.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        });
+
+        options.forEach((option) => {
+            option.addEventListener('click', () => {
+                setChoice(name, option.dataset.value);
+                updateDynamicFields();
+            });
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-choice]')) {
+            return;
+        }
+
+        root.querySelectorAll('[data-choice]').forEach((choice) => {
+            choice.dataset.open = 'false';
+            choice.querySelector('.tracker-choice__button').setAttribute('aria-expanded', 'false');
+        });
+    });
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const entry = readForm();
+
+        if (!entry.title) {
+            root.querySelector('[data-title-input]').focus();
+            return;
+        }
+
+        try {
+            await saveEntry(entry);
+            resetForm();
+            await fetchEntries();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    resetButton.addEventListener('click', resetForm);
+    searchInput.addEventListener('input', renderList);
+
+    clearButton.addEventListener('click', () => {
+        searchInput.value = '';
+        renderList();
+    });
+
+    list.addEventListener('click', (event) => {
+        const toggle = event.target.closest('[data-toggle-entry]');
+        const edit = event.target.closest('[data-edit-entry]');
+        const remove = event.target.closest('[data-delete-entry]');
+
+        if (edit) {
+            const entry = entries.find((item) => String(item.id) === edit.dataset.editEntry);
+            if (entry) {
+                fillForm(entry);
+            }
+            return;
+        }
+
+        if (remove) {
+            const entry = entries.find((item) => String(item.id) === remove.dataset.deleteEntry);
+            if (!entry || !confirm(`Supprimer "${entry.title}" ?`)) {
+                return;
+            }
+
+            deleteEntry(entry.id)
+                .then(fetchEntries)
+                .catch((error) => alert(error.message));
+            return;
+        }
+
+        if (toggle) {
+            const item = toggle.closest('.tracker-item');
+            item.dataset.expanded = item.dataset.expanded === 'true' ? 'false' : 'true';
+        }
+    });
+
+    resetForm();
+    fetchEntries().catch((error) => {
+        list.innerHTML = `<div class="tracker-empty"><span>${escapeHtml(error.message)}</span></div>`;
+    });
+})();
+</script>
+{% endblock %}

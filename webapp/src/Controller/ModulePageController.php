@@ -2,29 +2,19 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class ModulePageController
+final class ModulePageController extends AbstractController
 {
     #[Route('/password-manager-legacy', name: 'app_password_manager_legacy', methods: ['GET'])]
     public function passwordManager(Security $security): Response
     {
-        return new Response($this->render(
+        return new Response($this->renderPlaceholder(
             'Password Manager',
-            'Centraliser les accès, structurer les secrets et garder le contrôle dans une interface Riskiness cohérente.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
-    #[Route('/movie-tracker', name: 'app_movie_tracker', methods: ['GET'])]
-    public function movieTracker(Security $security): Response
-    {
-        return new Response($this->render(
-            'Movie Tracker',
-            'Suivre les films, organiser les listes et construire un module cinéphile prêt à grandir.',
+            'Centraliser les acces, structurer les secrets et garder le controle dans une interface Riskiness coherente.',
             $this->accountHref($security),
             $this->accountButtonClass($security)
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
@@ -33,9 +23,9 @@ final class ModulePageController
     #[Route('/budget-pulse', name: 'app_budget_pulse', methods: ['GET'])]
     public function budgetPulse(Security $security): Response
     {
-        return new Response($this->render(
+        return new Response($this->renderPlaceholder(
             'Budget Pulse',
-            'Piloter les revenus, les dépenses et les arbitrages financiers dans une vue claire et premium.',
+            'Piloter les revenus, les depenses et les arbitrages financiers dans une vue claire et premium.',
             $this->accountHref($security),
             $this->accountButtonClass($security)
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
@@ -44,9 +34,9 @@ final class ModulePageController
     #[Route('/recipe-atelier', name: 'app_recipe_atelier', methods: ['GET'])]
     public function recipeAtelier(Security $security): Response
     {
-        return new Response($this->render(
+        return new Response($this->renderPlaceholder(
             'Recipe Atelier',
-            'Organiser des recettes, structurer les ingrédients et retrouver rapidement chaque préparation.',
+            'Organiser des recettes, structurer les ingredients et retrouver rapidement chaque preparation.',
             $this->accountHref($security),
             $this->accountButtonClass($security)
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
@@ -55,9 +45,9 @@ final class ModulePageController
     #[Route('/doc-sentinel', name: 'app_doc_sentinel', methods: ['GET'])]
     public function docSentinel(Security $security): Response
     {
-        return new Response($this->render(
+        return new Response($this->renderPlaceholder(
             'Doc Sentinel',
-            'Surveiller les dates d’expiration, les relances et les documents sensibles avec précision.',
+            'Surveiller les dates d expiration, les relances et les documents sensibles avec precision.',
             $this->accountHref($security),
             $this->accountButtonClass($security)
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
@@ -66,15 +56,15 @@ final class ModulePageController
     #[Route('/cycle-care', name: 'app_cycle_care', methods: ['GET'])]
     public function cycleCare(Security $security): Response
     {
-        return new Response($this->render(
+        return new Response($this->renderPlaceholder(
             'Cycle Care',
-            'Suivre les cycles, les symptômes et le confort avec une expérience douce et discrète.',
+            'Suivre les cycles, les symptomes et le confort avec une experience douce et discrete.',
             $this->accountHref($security),
             $this->accountButtonClass($security)
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    private function render(string $title, string $description, string $accountHref, string $accountButtonClass): string
+    private function renderPlaceholder(string $title, string $description, string $accountHref, string $accountButtonClass): string
     {
         $safeTitle = htmlspecialchars($title, ENT_QUOTES);
         $safeDescription = htmlspecialchars($description, ENT_QUOTES);
@@ -121,32 +111,6 @@ final class ModulePageController
 
         a { color: inherit; text-decoration: none; }
         .page { position: relative; overflow: clip; }
-        .page::before,
-        .page::after {
-            content: '';
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            filter: blur(18px);
-            opacity: 0.45;
-        }
-        .page::before {
-            width: 420px;
-            height: 420px;
-            top: -120px;
-            right: -120px;
-            border-radius: 999px;
-            background: rgba(255, 122, 61, 0.14);
-        }
-        .page::after {
-            width: 360px;
-            height: 360px;
-            left: -100px;
-            top: 220px;
-            border-radius: 999px;
-            background: rgba(245, 36, 94, 0.13);
-        }
-
         .shell {
             position: relative;
             z-index: 1;
@@ -191,15 +155,7 @@ final class ModulePageController
             background: rgba(255, 255, 255, 0.06);
             border-color: currentColor;
         }
-        .headerline__button svg,
-        .headerline__home svg {
-            width: 22px;
-            height: 22px;
-            stroke-width: 1.9;
-        }
-        .headerline__button--home {
-            color: var(--text-primary);
-        }
+        .headerline__button svg { width: 22px; height: 22px; stroke-width: 1.9; }
         .headerline__button--account-logged-in {
             color: rgba(60, 196, 119, 0.92);
             border-color: rgba(60, 196, 119, 0.22);
@@ -302,8 +258,7 @@ final class ModulePageController
             .brand__logo { max-width: 100%; height: 34px; }
             .brand__name { font-size: 0.98rem; }
             .headerline__button { width: 44px; height: 44px; border-radius: 16px; }
-            .headerline__button svg,
-            .headerline__home svg { width: 20px; height: 20px; }
+            .headerline__button svg { width: 20px; height: 20px; }
             .hero { padding: 20px; }
             .footer { padding: 4px 10px; }
         }
@@ -313,12 +268,12 @@ final class ModulePageController
     <main class="page">
         <div class="shell">
             <div class="headerline">
-                <a class="brand" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                <a class="brand" href="/" aria-label="Retour a l'accueil" title="Retour a l'accueil">
                     <img class="brand__logo" src="/logo/riskiness-icon-degrade.svg" alt="Riskiness">
                     <span class="brand__name">RISKINESS</span>
                 </a>
                 <div class="headerline__actions">
-                    <a class="headerline__button headerline__button--home" href="/" aria-label="Retour à l'accueil" title="Retour à l'accueil">
+                    <a class="headerline__button" href="/" aria-label="Retour a l'accueil" title="Retour a l'accueil">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" role="img">
                             <path d="M3 11.5 12 4l9 7.5"/>
                             <path d="M6 10.5V20h12v-9.5"/>
@@ -341,7 +296,7 @@ final class ModulePageController
             </section>
 
             <div class="footer">
-                <span>© 2026 Riskiness. Tous droits réservés.</span>
+                <span>&copy; 2026 Riskiness. Tous droits reserves.</span>
             </div>
         </div>
     </main>
