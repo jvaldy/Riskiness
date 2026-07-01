@@ -1,0 +1,1218 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Budget Pulse{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .budget {
+        margin: 28px 4px 10px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .budget-panel {
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.11), transparent 34%),
+            radial-gradient(circle at left, rgba(245, 36, 94, 0.10), transparent 30%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+            var(--surface-1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .budget-header,
+    .budget-card {
+        padding: 18px;
+    }
+
+    .budget-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .budget-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .budget-eyebrow::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--brand-gradient);
+        box-shadow: 0 0 18px rgba(245, 36, 94, 0.55);
+    }
+
+    .budget-title {
+        margin: 12px 0 0;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .budget-title .accent {
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .budget-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .budget-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 14px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.84rem;
+        font-weight: 800;
+        text-decoration: none;
+        transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .budget-button:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.075);
+        border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .budget-button--primary {
+        border-color: transparent;
+        background: var(--brand-gradient);
+        box-shadow: 0 14px 30px rgba(245, 36, 94, 0.18);
+    }
+
+    .budget-button--danger:hover {
+        border-color: rgba(255, 92, 107, 0.42);
+        background: rgba(255, 92, 107, 0.10);
+        color: #ffb9c2;
+    }
+
+    .budget-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .budget-stat {
+        min-height: 46px;
+        padding: 7px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.035);
+        min-width: 0;
+    }
+
+    .budget-stat__label {
+        color: var(--text-tertiary);
+        font-size: 0.58rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .budget-stat__value {
+        margin-top: 3px;
+        color: var(--text-primary);
+        font-size: clamp(0.9rem, 1.25vw, 1.08rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .budget-stat__hint {
+        margin-top: 1px;
+        color: var(--text-tertiary);
+        font-size: 0.6rem;
+        line-height: 1.15;
+    }
+
+    .budget-stat--pulse {
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.16), transparent 40%),
+            rgba(245, 36, 94, 0.08);
+    }
+
+    .budget-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+        gap: 16px;
+        align-items: start;
+    }
+
+    .budget-card__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .budget-card__title {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    .budget-toolbar {
+        display: grid;
+        grid-template-columns: 1fr 150px 150px;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .budget-input,
+    .budget-select,
+    .budget-textarea {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--text-primary);
+        outline: none;
+        padding: 0 12px;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .budget-select option {
+        color: #fff;
+        background: #120B16;
+    }
+
+    .budget-input:hover,
+    .budget-select:hover,
+    .budget-textarea:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.065);
+    }
+
+    .budget-input:focus,
+    .budget-select:focus,
+    .budget-textarea:focus {
+        border-color: rgba(245, 36, 94, 0.78);
+        box-shadow: 0 0 0 4px rgba(245, 36, 94, 0.14);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .budget-textarea {
+        min-height: 76px;
+        padding-top: 11px;
+        resize: vertical;
+    }
+
+    .budget-form,
+    .budget-grid,
+    .budget-list,
+    .budget-bars,
+    .budget-chip-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .budget-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .budget-field {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .budget-field--full {
+        grid-column: 1 / -1;
+    }
+
+    .budget-field[hidden] {
+        display: none !important;
+    }
+
+    .budget-label {
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .budget-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .budget-toggle input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--brand-pink);
+    }
+
+    .budget-helper {
+        color: var(--text-tertiary);
+        font-size: 0.72rem;
+        line-height: 1.35;
+    }
+
+    .budget-category,
+    .budget-transaction,
+    .budget-chip {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 17px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .budget-category {
+        padding: 11px;
+    }
+
+    .budget-category__top,
+    .budget-transaction {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .budget-category__name,
+    .budget-transaction__title {
+        font-weight: 850;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .budget-category__meta,
+    .budget-transaction__meta {
+        margin-top: 4px;
+        color: var(--text-tertiary);
+        font-size: 0.76rem;
+    }
+
+    .budget-transaction__badges {
+        display: inline-flex;
+        gap: 5px;
+        margin-left: 6px;
+        vertical-align: middle;
+    }
+
+    .budget-mini-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 18px;
+        padding: 0 7px;
+        border-radius: 999px;
+        background: rgba(245, 36, 94, 0.14);
+        color: rgba(255, 229, 237, 0.92);
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .budget-transaction {
+        min-height: 44px;
+        padding: 8px 9px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        border-radius: 14px;
+    }
+
+    .budget-transaction__main {
+        min-width: 0;
+    }
+
+    .budget-transaction__amount {
+        font-weight: 900;
+        white-space: nowrap;
+        font-size: 0.92rem;
+    }
+
+    .budget-transaction__amount--income {
+        color: rgba(108, 232, 151, 0.95);
+    }
+
+    .budget-transaction__amount--expense {
+        color: rgba(255, 185, 194, 0.95);
+    }
+
+    .budget-transaction__actions {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 5px;
+    }
+
+    .budget-transaction__side {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-self: end;
+    }
+
+    .budget-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 11px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+
+    .budget-icon-button svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2;
+    }
+
+    .budget-chip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 11px;
+    }
+
+    .budget-chip strong {
+        color: var(--text-primary);
+    }
+
+    .budget-chip span {
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+    }
+
+    .budget-empty {
+        display: grid;
+        place-items: center;
+        min-height: 110px;
+        border: 1px dashed rgba(255, 255, 255, 0.13);
+        border-radius: 20px;
+        color: var(--text-tertiary);
+        text-align: center;
+        padding: 18px;
+    }
+
+    .budget-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(7, 5, 10, 0.68);
+        backdrop-filter: blur(10px);
+    }
+
+    .budget-modal[data-open="true"] {
+        display: flex;
+    }
+
+    .budget-modal__panel {
+        width: min(100%, 780px);
+        max-height: min(86vh, 900px);
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.14), transparent 35%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.035)),
+            #15111B;
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    .budget-modal__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .budget-tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .budget-tab {
+        min-height: 38px;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-weight: 800;
+    }
+
+    .budget-tab[data-active="true"] {
+        color: #fff;
+        background: rgba(245, 36, 94, 0.18);
+        border-color: rgba(245, 36, 94, 0.42);
+    }
+
+    .budget-import {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    .budget-option-grid {
+        display: grid;
+        gap: 16px;
+    }
+
+    .budget-table-wrap {
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .budget-option-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .budget-option-table th,
+    .budget-option-table td {
+        padding: 11px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .budget-option-table th {
+        color: var(--text-tertiary);
+        font-size: 0.68rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .budget-option-table tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .budget-option-table strong {
+        color: var(--text-primary);
+    }
+
+    .budget-option-table__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 1100px) {
+        .budget-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .budget-layout,
+        .budget-toolbar {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .budget {
+            margin-top: 20px;
+            gap: 14px;
+        }
+
+        .budget-header,
+        .budget-card,
+        .budget-modal__panel {
+            padding: 16px;
+            border-radius: 24px;
+        }
+
+        .budget-header,
+        .budget-grid,
+        .budget-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .budget-transaction {
+            grid-template-columns: 1fr;
+        }
+
+        .budget-transaction__side {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .budget-actions {
+            justify-content: flex-start;
+        }
+
+        .budget-option-table,
+        .budget-option-table tbody,
+        .budget-option-table tr,
+        .budget-option-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .budget-option-table thead {
+            display: none;
+        }
+
+        .budget-option-table tr {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .budget-option-table tr:last-child {
+            border-bottom: 0;
+        }
+
+        .budget-option-table td {
+            padding: 5px 0;
+            border-bottom: 0;
+        }
+
+        .budget-option-table td::before {
+            content: attr(data-label);
+            display: block;
+            margin-bottom: 2px;
+            color: var(--text-tertiary);
+            font-size: 0.62rem;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .budget-option-table__actions {
+            justify-content: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section
+    class="budget"
+    data-budget-pulse
+    data-transactions-url="{{ path('app_budget_pulse_transactions') }}"
+    data-save-url="{{ path('app_budget_pulse_transaction_save') }}"
+    data-delete-url-template="{{ path('app_budget_pulse_transaction_delete', { id: 0 }) }}"
+    data-csrf-token="{{ csrf_token('budget_pulse_transaction') }}"
+>
+    <section class="budget-panel budget-header" aria-labelledby="budget-title">
+        <div>
+            <span class="budget-eyebrow" data-current-month>Budget Pulse</span>
+            <h1 class="budget-title" id="budget-title"><span class="accent">Budget Pulse</span></h1>
+        </div>
+        <div class="budget-actions">
+            <button class="budget-button budget-button--primary" type="button" data-open-modal="transaction">Ajouter</button>
+            <button class="budget-button" type="button" data-open-modal="summary">Resume</button>
+            <button class="budget-button" type="button" data-open-modal="options">Options</button>
+        </div>
+    </section>
+
+    <section class="budget-summary" aria-label="Resume du mois">
+        <article class="budget-stat">
+            <span class="budget-stat__label">Revenus</span>
+            <div class="budget-stat__value" data-total-income>0 EUR</div>
+        </article>
+        <article class="budget-stat">
+            <span class="budget-stat__label">Depenses</span>
+            <div class="budget-stat__value" data-total-expense>0 EUR</div>
+        </article>
+        <article class="budget-stat">
+            <span class="budget-stat__label">Solde</span>
+            <div class="budget-stat__value" data-balance>0 EUR</div>
+            <div class="budget-stat__hint" data-savings-rate>0 % d'epargne</div>
+        </article>
+        <article class="budget-stat budget-stat--pulse">
+            <span class="budget-stat__label">Pulse</span>
+            <div class="budget-stat__value" data-pulse>Sain</div>
+            <div class="budget-stat__hint" data-pulse-hint>Budget sous controle</div>
+        </article>
+    </section>
+
+    <section class="budget-panel budget-card">
+        <div class="budget-card__head">
+            <h2 class="budget-card__title">Transactions</h2>
+            <span class="budget-stat__hint" data-projection>Mois confortable</span>
+        </div>
+        <div class="budget-toolbar">
+            <input class="budget-input" type="search" placeholder="Recherche..." data-search-input>
+            <input class="budget-input" type="month" data-month-filter>
+            <select class="budget-select" data-type-filter>
+                <option value="all">Tout</option>
+                <option value="income">Revenus</option>
+                <option value="expense">Depenses</option>
+                <option value="recurring">Abonnements</option>
+            </select>
+        </div>
+        <div class="budget-list" data-transaction-list></div>
+    </section>
+
+    <div class="budget-modal" data-modal="transaction" aria-hidden="true">
+        <div class="budget-modal__panel" role="dialog" aria-modal="true" aria-labelledby="transaction-modal-title">
+            <div class="budget-modal__head">
+                <h2 class="budget-card__title" id="transaction-modal-title">Transaction</h2>
+                <button class="budget-icon-button" type="button" data-close-modal aria-label="Fermer">&times;</button>
+            </div>
+            <form class="budget-form" data-budget-form autocomplete="off">
+                <input type="hidden" name="id" data-entry-id>
+                <div class="budget-grid">
+                    <label class="budget-field">
+                        <span class="budget-label">Type</span>
+                        <select class="budget-select" name="type" data-type-select>
+                            <option value="expense">Depense</option>
+                            <option value="income">Revenu</option>
+                        </select>
+                    </label>
+                    <label class="budget-field">
+                        <span class="budget-label">Montant</span>
+                        <input class="budget-input" name="amount" type="number" min="0.01" step="0.01" placeholder="24.90" required>
+                    </label>
+                    <label class="budget-field">
+                        <span class="budget-label">Categorie</span>
+                        <select class="budget-select" name="category" data-category-select></select>
+                    </label>
+                    <label class="budget-field">
+                        <span class="budget-label">Date</span>
+                        <input class="budget-input" name="occurredAt" type="date" required>
+                    </label>
+                    <label class="budget-field budget-field--full">
+                        <span class="budget-label">Libelle</span>
+                        <input class="budget-input" name="label" type="text" placeholder="Courses, salaire, Netflix..." required>
+                    </label>
+                    <label class="budget-toggle budget-field--full">
+                        <input type="checkbox" name="isRecurring" data-recurring-toggle>
+                        Recurrent
+                    </label>
+                    <label class="budget-field budget-field--full" data-frequency-field hidden>
+                        <span class="budget-label">Frequence</span>
+                        <select class="budget-select" name="recurrenceFrequency">
+                            <option value="monthly">Mensuelle</option>
+                            <option value="weekly">Hebdomadaire</option>
+                            <option value="yearly">Annuelle</option>
+                        </select>
+                    </label>
+                    <label class="budget-field budget-field--full">
+                        <span class="budget-label">Note</span>
+                        <textarea class="budget-textarea" name="note" placeholder="Optionnel"></textarea>
+                    </label>
+                </div>
+                <div class="budget-actions">
+                    <button class="budget-button budget-button--primary" type="submit">Enregistrer</button>
+                    <button class="budget-button" type="button" data-reset-button>Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="budget-modal" data-modal="summary" aria-hidden="true">
+        <div class="budget-modal__panel" role="dialog" aria-modal="true" aria-labelledby="summary-modal-title">
+            <div class="budget-modal__head">
+                <div>
+                    <h2 class="budget-card__title" id="summary-modal-title">Categories des depenses</h2>
+                    <div class="budget-stat__hint" data-summary-month>Mois selectionne</div>
+                </div>
+                <button class="budget-icon-button" type="button" data-close-modal aria-label="Fermer">&times;</button>
+            </div>
+            <div class="budget-card__head">
+                <span class="budget-stat__hint" data-subscriptions>Abonnements: 0 EUR / mois</span>
+            </div>
+            <div class="budget-bars" data-category-summary></div>
+        </div>
+    </div>
+
+    <div class="budget-modal" data-modal="options" aria-hidden="true">
+        <div class="budget-modal__panel" role="dialog" aria-modal="true" aria-labelledby="options-modal-title">
+            <div class="budget-modal__head">
+                <h2 class="budget-card__title" id="options-modal-title">Options</h2>
+                <button class="budget-icon-button" type="button" data-close-modal aria-label="Fermer">&times;</button>
+            </div>
+            <div class="budget-option-grid">
+                <section>
+                    <div class="budget-card__head">
+                        <h3 class="budget-card__title">Export</h3>
+                        <span class="budget-stat__hint">Toutes les transactions de ton compte</span>
+                    </div>
+                    <div class="budget-table-wrap">
+                        <table class="budget-option-table">
+                            <thead>
+                                <tr>
+                                    <th>Format</th>
+                                    <th>Structure</th>
+                                    <th>Usage conseille</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Format"><strong>JSON</strong></td>
+                                    <td data-label="Structure">Objet avec cle <code>transactions</code> et champs francais</td>
+                                    <td data-label="Usage conseille">Sauvegarde complete et reimport propre</td>
+                                    <td data-label="Action">
+                                        <div class="budget-option-table__actions">
+                                            <a class="budget-button" href="{{ path('app_budget_pulse_export') }}">Exporter JSON</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td data-label="Format"><strong>CSV</strong></td>
+                                    <td data-label="Structure">Table: Type, Montant, Categorie, Libelle, Note, Date, Recurrent, Frequence</td>
+                                    <td data-label="Usage conseille">Tableur, audit rapide, retraitement</td>
+                                    <td data-label="Action">
+                                        <div class="budget-option-table__actions">
+                                            <a class="budget-button" href="{{ path('app_budget_pulse_export', { format: 'csv' }) }}">Exporter CSV</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="budget-card__head">
+                        <h3 class="budget-card__title">Import</h3>
+                        <span class="budget-stat__hint">Colonnes attendues: Type, Montant, Categorie, Libelle, Note, Date, Recurrent, Frequence</span>
+                    </div>
+                    <div class="budget-table-wrap">
+                        <table class="budget-option-table">
+                            <thead>
+                                <tr>
+                                    <th>Format accepte</th>
+                                    <th>Structure attendue</th>
+                                    <th>Regles</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Format accepte"><strong>JSON ou CSV</strong></td>
+                                    <td data-label="Structure attendue">Une ligne = une transaction</td>
+                                    <td data-label="Regles">Montant, libelle et date valides requis</td>
+                                    <td data-label="Action">
+                                        <form class="budget-import" action="{{ path('app_budget_pulse_import') }}" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('budget_pulse_import') }}">
+                                            <label class="budget-button budget-button--primary">
+                                                Importer un fichier
+                                                <input type="file" name="import_file" accept=".json,.csv,application/json,text/csv" data-import-input hidden>
+                                            </label>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <div class="budget-modal" data-modal="transaction-details" aria-hidden="true">
+        <div class="budget-modal__panel" role="dialog" aria-modal="true" aria-labelledby="transaction-details-title">
+            <div class="budget-modal__head">
+                <h2 class="budget-card__title" id="transaction-details-title" data-details-title>Details</h2>
+                <button class="budget-icon-button" type="button" data-close-modal aria-label="Fermer">&times;</button>
+            </div>
+            <div class="budget-chip-list" data-transaction-details></div>
+        </div>
+    </div>
+</section>
+
+<script>
+(() => {
+    const root = document.querySelector('[data-budget-pulse]');
+    if (!root) return;
+
+    const form = root.querySelector('[data-budget-form]');
+    const idInput = root.querySelector('[data-entry-id]');
+    const typeSelect = root.querySelector('[data-type-select]');
+    const categorySelect = root.querySelector('[data-category-select]');
+    const typeFilter = root.querySelector('[data-type-filter]');
+    const monthFilter = root.querySelector('[data-month-filter]');
+    const searchInput = root.querySelector('[data-search-input]');
+    const recurringToggle = root.querySelector('[data-recurring-toggle]');
+    const frequencyField = root.querySelector('[data-frequency-field]');
+    const list = root.querySelector('[data-transaction-list]');
+    const categorySummary = root.querySelector('[data-category-summary]');
+
+    let transactions = [];
+    let categories = [];
+
+    const currency = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
+    const monthName = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+
+    const today = () => new Date().toISOString().slice(0, 10);
+    const currentMonth = () => today().slice(0, 7);
+    const monthOf = (date) => String(date || '').slice(0, 7);
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function openModal(name) {
+        const modal = root.querySelector(`[data-modal="${name}"]`);
+        if (!modal) return;
+        modal.dataset.open = 'true';
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModals() {
+        root.querySelectorAll('[data-modal]').forEach((modal) => {
+            modal.dataset.open = 'false';
+            modal.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    async function loadData() {
+        const response = await fetch(root.dataset.transactionsUrl, { headers: { Accept: 'application/json' } });
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        if (!response.ok) throw new Error('Impossible de charger Budget Pulse.');
+        const payload = await response.json();
+        categories = payload.categories || [];
+        transactions = payload.transactions || [];
+        hydrateCategories();
+        render();
+    }
+
+    function hydrateCategories() {
+        const selected = categorySelect.value;
+        categorySelect.innerHTML = categories
+            .filter((category) => category.type === typeSelect.value || (typeSelect.value === 'expense' && category.name === 'Autre'))
+            .map((category) => `<option value="${escapeHtml(category.name)}">${escapeHtml(category.name)}</option>`)
+            .join('');
+        if (selected) categorySelect.value = selected;
+    }
+
+    function visibleTransactions() {
+        const month = monthFilter.value || currentMonth();
+        const type = typeFilter.value;
+        const query = searchInput.value.trim().toLowerCase();
+        return transactions.filter((transaction) => {
+            if (monthOf(transaction.occurredAt) !== month) return false;
+            if (type === 'recurring' && !transaction.isRecurring) return false;
+            if (type !== 'all' && type !== 'recurring' && transaction.type !== type) return false;
+            if (query && ![transaction.label, transaction.category, transaction.note].join(' ').toLowerCase().includes(query)) return false;
+            return true;
+        });
+    }
+
+    const monthTransactions = (month) => transactions.filter((transaction) => monthOf(transaction.occurredAt) === month);
+
+    function totals(items) {
+        const income = items.filter((item) => item.type === 'income').reduce((sum, item) => sum + Number(item.amount), 0);
+        const expense = items.filter((item) => item.type === 'expense').reduce((sum, item) => sum + Number(item.amount), 0);
+        return { income, expense, balance: income - expense };
+    }
+
+    function renderDashboard(monthItems) {
+        const total = totals(monthItems);
+        const ratio = total.income > 0 ? total.expense / total.income : 0;
+        const savingsRate = total.income > 0 ? Math.round((total.balance / total.income) * 100) : 0;
+        let pulse = 'Sain';
+        let hint = 'Budget sous controle';
+        if (total.balance < 0) {
+            pulse = 'A risque';
+            hint = 'Solde negatif';
+        } else if (ratio >= 0.85) {
+            pulse = 'Tendu';
+            hint = 'Depenses proches des revenus';
+        }
+
+        root.querySelector('[data-total-income]').textContent = currency.format(total.income);
+        root.querySelector('[data-total-expense]').textContent = currency.format(total.expense);
+        root.querySelector('[data-balance]').textContent = currency.format(total.balance);
+        root.querySelector('[data-savings-rate]').textContent = `${savingsRate} % d'epargne`;
+        root.querySelector('[data-pulse]').textContent = pulse;
+        root.querySelector('[data-pulse-hint]').textContent = hint;
+        root.querySelector('[data-current-month]').textContent = monthName.format(new Date(`${monthFilter.value || currentMonth()}-01T00:00:00`));
+        root.querySelector('[data-summary-month]').textContent = monthName.format(new Date(`${monthFilter.value || currentMonth()}-01T00:00:00`));
+        renderProjection(monthItems, total.balance);
+    }
+
+    function renderProjection(monthItems, balance) {
+        const month = monthFilter.value || currentMonth();
+        const now = new Date();
+        const day = month === currentMonth() ? now.getDate() : 30;
+        const daysInMonth = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0).getDate();
+        const remaining = Math.max(0, daysInMonth - day);
+        const spent = monthItems.filter((item) => item.type === 'expense').reduce((sum, item) => sum + Number(item.amount), 0);
+        const projectedBalance = balance - ((spent / Math.max(1, day)) * remaining);
+        const recurringMonthly = transactions.filter((item) => item.type === 'expense' && item.isRecurring).reduce((sum, item) => {
+            if (item.recurrenceFrequency === 'weekly') return sum + Number(item.amount) * 4.33;
+            if (item.recurrenceFrequency === 'yearly') return sum + Number(item.amount) / 12;
+            return sum + Number(item.amount);
+        }, 0);
+        let message = 'Mois confortable';
+        if (projectedBalance < 0) message = 'Risque de depassement';
+        else if (projectedBalance < spent * 0.15) message = 'Rythme a surveiller';
+        root.querySelector('[data-projection]').textContent = message;
+        root.querySelector('[data-subscriptions]').textContent = `Abonnements: ${currency.format(recurringMonthly)} / mois`;
+    }
+
+    function renderCategorySummary(monthItems) {
+        const expenseItems = monthItems.filter((item) => item.type === 'expense');
+        const rows = categories.filter((category) => category.type === 'expense').map((category) => {
+            const spent = expenseItems
+                .filter((item) => item.category === category.name)
+                .reduce((sum, item) => sum + Number(item.amount), 0);
+
+            if (spent <= 0) {
+                return '';
+            }
+
+            return `
+                <article class="budget-category">
+                    <div class="budget-category__top">
+                        <div>
+                            <div class="budget-category__name">${escapeHtml(category.name)}</div>
+                            <div class="budget-category__meta">Depense du mois</div>
+                        </div>
+                        <span class="budget-stat__hint">${currency.format(spent)}</span>
+                    </div>
+                </article>
+            `;
+        }).filter(Boolean);
+
+        categorySummary.innerHTML = rows.length ? rows.join('') : '<div class="budget-empty">Aucune depense sur ce mois.</div>';
+    }
+
+    function renderTransactions(items) {
+        if (!items.length) {
+            list.innerHTML = '<div class="budget-empty">Aucune transaction pour ces filtres.</div>';
+            return;
+        }
+        list.innerHTML = items.map((transaction) => {
+            const sign = transaction.type === 'income' ? '+' : '-';
+            const badges = [
+                transaction.note ? '<span class="budget-mini-badge">note</span>' : '',
+                transaction.isRecurring ? '<span class="budget-mini-badge">recurrent</span>' : ''
+            ].filter(Boolean).join('');
+            const hasDetails = Boolean(transaction.note || transaction.isRecurring);
+            return `
+                <article class="budget-transaction">
+                    <div class="budget-transaction__main">
+                        <div class="budget-transaction__title">${escapeHtml(transaction.label)}</div>
+                        <div class="budget-transaction__meta">
+                            ${escapeHtml(transaction.category)} - ${escapeHtml(transaction.occurredAt)}
+                            ${badges ? `<span class="budget-transaction__badges">${badges}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="budget-transaction__side">
+                        <div class="budget-transaction__amount budget-transaction__amount--${transaction.type}">${sign}${currency.format(Number(transaction.amount))}</div>
+                        <div class="budget-transaction__actions">
+                            ${hasDetails ? `
+                                <button class="budget-icon-button" type="button" data-details="${transaction.id}" aria-label="Voir les details" title="Details">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                                </button>
+                            ` : ''}
+                            <button class="budget-icon-button" type="button" data-edit="${transaction.id}" aria-label="Modifier" title="Modifier">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                            </button>
+                            <button class="budget-icon-button budget-button--danger" type="button" data-delete="${transaction.id}" aria-label="Supprimer" title="Supprimer">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }).join('');
+    }
+
+    function recurrenceLabel(value) {
+        if (value === 'weekly') return 'Hebdomadaire';
+        if (value === 'yearly') return 'Annuelle';
+        return 'Mensuelle';
+    }
+
+    function openTransactionDetails(transaction) {
+        root.querySelector('[data-details-title]').textContent = transaction.label;
+        root.querySelector('[data-transaction-details]').innerHTML = `
+            <article class="budget-chip">
+                <strong>Montant</strong>
+                <span>${transaction.type === 'income' ? '+' : '-'}${currency.format(Number(transaction.amount))}</span>
+            </article>
+            <article class="budget-chip">
+                <strong>Categorie</strong>
+                <span>${escapeHtml(transaction.category)} - ${escapeHtml(transaction.occurredAt)}</span>
+            </article>
+            ${transaction.isRecurring ? `
+                <article class="budget-chip">
+                    <strong>Prelevement recurrent</strong>
+                    <span>${recurrenceLabel(transaction.recurrenceFrequency)}</span>
+                </article>
+            ` : ''}
+            ${transaction.note ? `
+                <article class="budget-chip">
+                    <strong>Note</strong>
+                    <span>${escapeHtml(transaction.note)}</span>
+                </article>
+            ` : ''}
+        `;
+        openModal('transaction-details');
+    }
+
+    function render() {
+        const month = monthFilter.value || currentMonth();
+        const monthItems = monthTransactions(month);
+        renderDashboard(monthItems);
+        renderCategorySummary(monthItems);
+        renderTransactions(visibleTransactions());
+    }
+
+    function readForm() {
+        const data = new FormData(form);
+        return {
+            id: idInput.value,
+            type: data.get('type'),
+            amount: data.get('amount'),
+            category: data.get('category'),
+            label: data.get('label'),
+            note: data.get('note'),
+            occurredAt: data.get('occurredAt'),
+            isRecurring: recurringToggle.checked,
+            recurrenceFrequency: data.get('recurrenceFrequency') || 'monthly'
+        };
+    }
+
+    function resetForm() {
+        form.reset();
+        idInput.value = '';
+        form.elements.occurredAt.value = today();
+        typeSelect.value = 'expense';
+        recurringToggle.checked = false;
+        frequencyField.hidden = true;
+        hydrateCategories();
+    }
+
+    async function saveTransaction(payload) {
+        const response = await fetch(root.dataset.saveUrl, {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-Token': root.dataset.csrfToken },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.error || 'Impossible d enregistrer la transaction.');
+        }
+    }
+
+    async function deleteTransaction(id) {
+        const response = await fetch(root.dataset.deleteUrlTemplate.replace(/0$/, id), {
+            method: 'DELETE',
+            headers: { Accept: 'application/json', 'X-CSRF-Token': root.dataset.csrfToken }
+        });
+        if (!response.ok) throw new Error('Impossible de supprimer la transaction.');
+    }
+
+    root.querySelectorAll('[data-open-modal]').forEach((button) => button.addEventListener('click', () => openModal(button.dataset.openModal)));
+    root.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', closeModals));
+    root.querySelectorAll('[data-modal]').forEach((modal) => modal.addEventListener('click', (event) => { if (event.target === modal) closeModals(); }));
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            await saveTransaction(readForm());
+            resetForm();
+            closeModals();
+            await loadData();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    root.querySelector('[data-reset-button]').addEventListener('click', () => { resetForm(); closeModals(); });
+    typeSelect.addEventListener('change', hydrateCategories);
+    recurringToggle.addEventListener('change', () => { frequencyField.hidden = !recurringToggle.checked; });
+    [searchInput, monthFilter, typeFilter].forEach((control) => control.addEventListener('input', render));
+    [typeFilter, monthFilter].forEach((control) => control.addEventListener('change', render));
+    root.querySelector('[data-import-input]').addEventListener('change', (event) => { if (event.currentTarget.files.length > 0) event.currentTarget.closest('form').submit(); });
+
+    list.addEventListener('click', async (event) => {
+        const details = event.target.closest('[data-details]');
+        const edit = event.target.closest('[data-edit]');
+        const remove = event.target.closest('[data-delete]');
+        if (details) {
+            const transaction = transactions.find((item) => String(item.id) === details.dataset.details);
+            if (transaction) openTransactionDetails(transaction);
+            return;
+        }
+        if (edit) {
+            const transaction = transactions.find((item) => String(item.id) === edit.dataset.edit);
+            if (!transaction) return;
+            idInput.value = transaction.id;
+            typeSelect.value = transaction.type;
+            hydrateCategories();
+            form.elements.amount.value = transaction.amount;
+            form.elements.category.value = transaction.category;
+            form.elements.label.value = transaction.label;
+            form.elements.note.value = transaction.note;
+            form.elements.occurredAt.value = transaction.occurredAt;
+            recurringToggle.checked = transaction.isRecurring;
+            frequencyField.hidden = !transaction.isRecurring;
+            form.elements.recurrenceFrequency.value = transaction.recurrenceFrequency || 'monthly';
+            openModal('transaction');
+        }
+        if (remove) {
+            const transaction = transactions.find((item) => String(item.id) === remove.dataset.delete);
+            if (!transaction || !confirm(`Supprimer "${transaction.label}" ?`)) return;
+            await deleteTransaction(transaction.id);
+            await loadData();
+        }
+    });
+
+    monthFilter.value = currentMonth();
+    resetForm();
+    loadData().catch((error) => { list.innerHTML = `<div class="budget-empty">${escapeHtml(error.message)}</div>`; });
+})();
+</script>
+{% endblock %}

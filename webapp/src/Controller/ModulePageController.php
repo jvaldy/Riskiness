@@ -20,17 +20,6 @@ final class ModulePageController extends AbstractController
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    #[Route('/budget-pulse', name: 'app_budget_pulse', methods: ['GET'])]
-    public function budgetPulse(Security $security): Response
-    {
-        return new Response($this->renderPlaceholder(
-            'Budget Pulse',
-            'Piloter les revenus, les depenses et les arbitrages financiers dans une vue claire et premium.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
     #[Route('/recipe-atelier', name: 'app_recipe_atelier', methods: ['GET'])]
     public function recipeAtelier(Security $security): Response
     {
