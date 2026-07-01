@@ -569,8 +569,39 @@
 
         .budget-header,
         .budget-grid,
-        .budget-summary {
+        .budget-toolbar {
             grid-template-columns: 1fr;
+        }
+
+        .budget-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .budget-stat {
+            display: grid;
+            min-height: 54px;
+            align-content: center;
+            padding: 9px 10px;
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 122, 61, 0.10), transparent 52%),
+                rgba(255, 255, 255, 0.035);
+        }
+
+        .budget-stat__label {
+            font-size: 0.55rem;
+            letter-spacing: 0.04em;
+        }
+
+        .budget-stat__value {
+            margin-top: 4px;
+            font-size: 0.98rem;
+        }
+
+        .budget-stat__hint {
+            margin-top: 2px;
+            font-size: 0.56rem;
         }
 
         .budget-transaction {

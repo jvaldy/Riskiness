@@ -1,0 +1,1325 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Recipe Atelier{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .atelier {
+        margin: 28px 4px 10px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .atelier-panel {
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 34%),
+            radial-gradient(circle at left, rgba(245, 36, 94, 0.10), transparent 30%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+            var(--surface-1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .atelier-header,
+    .atelier-card {
+        padding: 18px;
+    }
+
+    .atelier-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .atelier-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .atelier-eyebrow::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--brand-gradient);
+        box-shadow: 0 0 18px rgba(245, 36, 94, 0.55);
+    }
+
+    .atelier-title {
+        margin: 12px 0 0;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .atelier-title .accent {
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .atelier-actions,
+    .atelier-row-actions,
+    .atelier-toolbar,
+    .atelier-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .atelier-actions {
+        justify-content: flex-end;
+    }
+
+    .atelier-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 0 13px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 850;
+        text-decoration: none;
+        transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+    }
+
+    .atelier-button:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.075);
+        border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .atelier-button--primary {
+        border-color: transparent;
+        background: var(--brand-gradient);
+        box-shadow: 0 14px 30px rgba(245, 36, 94, 0.18);
+    }
+
+    .atelier-button--danger:hover {
+        border-color: rgba(255, 92, 107, 0.42);
+        background: rgba(255, 92, 107, 0.10);
+        color: #ffb9c2;
+    }
+
+    .atelier-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .atelier-stat {
+        min-height: 46px;
+        padding: 8px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .atelier-stat span {
+        display: block;
+        color: var(--text-tertiary);
+        font-size: 0.58rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .atelier-stat strong {
+        display: block;
+        margin-top: 3px;
+        font-size: 1.05rem;
+        letter-spacing: -0.03em;
+    }
+
+    .atelier-toolbar {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) auto;
+        gap: 10px;
+        align-items: stretch;
+    }
+
+    .atelier-filter-toggle {
+        min-width: 112px;
+        white-space: nowrap;
+    }
+
+    .atelier-filter-panel {
+        display: none;
+        grid-template-columns: repeat(4, minmax(130px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.028);
+    }
+
+    .atelier-filter-panel[data-open="true"] {
+        display: grid;
+    }
+
+    .atelier-input,
+    .atelier-select,
+    .atelier-textarea {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--text-primary);
+        outline: none;
+        padding: 0 12px;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .atelier-select option {
+        color: #fff;
+        background: #120B16;
+    }
+
+    .atelier-input:focus,
+    .atelier-select:focus,
+    .atelier-textarea:focus {
+        border-color: rgba(245, 36, 94, 0.78);
+        box-shadow: 0 0 0 4px rgba(245, 36, 94, 0.14);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .atelier-textarea {
+        min-height: 82px;
+        padding-top: 11px;
+        resize: vertical;
+    }
+
+    .atelier-list,
+    .atelier-form,
+    .atelier-grid,
+    .atelier-stack,
+    .atelier-repeat-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    [data-item-list] {
+        margin-top: 14px;
+    }
+
+    .atelier-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .atelier-field {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .atelier-field--full {
+        grid-column: 1 / -1;
+    }
+
+    .atelier-label {
+        color: var(--text-secondary);
+        font-size: 0.76rem;
+        font-weight: 750;
+    }
+
+    .atelier-item,
+    .atelier-repeat,
+    .atelier-check {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 17px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .atelier-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+    }
+
+    .atelier-item__title {
+        font-weight: 900;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .atelier-item__meta,
+    .atelier-muted {
+        color: var(--text-tertiary);
+        font-size: 0.76rem;
+        line-height: 1.4;
+    }
+
+    .atelier-create-note {
+        margin-top: 8px;
+        color: var(--text-tertiary);
+        font-size: 0.76rem;
+        line-height: 1.4;
+    }
+
+    [data-advanced][hidden],
+    [data-create-note][hidden] {
+        display: none !important;
+    }
+
+    .atelier-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 22px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: rgba(245, 36, 94, 0.14);
+        color: rgba(255, 229, 237, 0.92);
+        font-size: 0.68rem;
+        font-weight: 850;
+    }
+
+    .atelier-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+
+    .atelier-icon-button svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+        stroke-width: 2.2;
+        fill: none;
+        pointer-events: none;
+    }
+
+    .atelier-icon-button[data-active="true"] {
+        color: #ffd66f;
+        border-color: rgba(255, 214, 111, 0.28);
+        background: rgba(255, 214, 111, 0.08);
+    }
+
+    .atelier-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(7, 5, 10, 0.68);
+        backdrop-filter: blur(10px);
+    }
+
+    .atelier-modal[data-open="true"] {
+        display: flex;
+    }
+
+    .atelier-modal__panel {
+        width: min(100%, 920px);
+        max-height: min(88vh, 920px);
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.14), transparent 35%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.035)),
+            #15111B;
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    .atelier-modal__head,
+    .atelier-section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .atelier-compact-summary {
+        display: none;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .atelier-compact-summary[data-visible="true"] {
+        display: grid;
+    }
+
+    .atelier-compact-summary__item {
+        min-height: 44px;
+        padding: 8px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .atelier-compact-summary__item span {
+        display: block;
+        color: var(--text-tertiary);
+        font-size: 0.58rem;
+        font-weight: 900;
+        text-transform: uppercase;
+    }
+
+    .atelier-compact-summary__item strong {
+        display: block;
+        margin-top: 3px;
+        overflow: hidden;
+        color: var(--text-primary);
+        font-size: 0.82rem;
+        font-weight: 850;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .atelier-disclosure {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.028);
+        overflow: hidden;
+    }
+
+    .atelier-disclosure[hidden] {
+        display: none !important;
+    }
+
+    .atelier-disclosure__toggle {
+        display: flex;
+        width: 100%;
+        min-height: 48px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 13px;
+        border: 0;
+        background: transparent;
+        color: var(--text-primary);
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .atelier-disclosure__toggle:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .atelier-disclosure__title {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    .atelier-disclosure__title strong {
+        font-size: 0.86rem;
+    }
+
+    .atelier-disclosure__title span {
+        color: var(--text-tertiary);
+        font-size: 0.72rem;
+        line-height: 1.35;
+    }
+
+    .atelier-disclosure__chevron {
+        color: var(--text-tertiary);
+        font-size: 1rem;
+        transition: transform 180ms ease;
+    }
+
+    .atelier-disclosure[data-open="true"] .atelier-disclosure__chevron {
+        transform: rotate(180deg);
+    }
+
+    .atelier-disclosure__body {
+        display: none;
+        padding: 0 13px 13px;
+    }
+
+    .atelier-disclosure[data-open="true"] .atelier-disclosure__body {
+        display: grid;
+        gap: 10px;
+    }
+
+    .atelier-view {
+        display: grid;
+        gap: 12px;
+    }
+
+    .atelier-view__hero {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .atelier-view__title {
+        margin: 0;
+        font-size: clamp(1.6rem, 4vw, 2.35rem);
+        line-height: 1;
+        letter-spacing: -0.05em;
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .atelier-view__section {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    .atelier-view__section h3 {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .atelier-view__list {
+        display: grid;
+        gap: 7px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .atelier-view__line {
+        padding: 9px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+
+    .atelier-view__line strong {
+        color: var(--text-primary);
+    }
+
+    .atelier-card__title {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    .atelier-repeat {
+        display: grid;
+        gap: 9px;
+        padding: 10px;
+    }
+
+    .atelier-repeat--resource {
+        grid-template-columns: 1.1fr 0.5fr 0.7fr 0.8fr auto;
+        align-items: end;
+    }
+
+    .atelier-repeat--step {
+        grid-template-columns: 1.5fr 0.5fr 0.9fr auto;
+        align-items: end;
+    }
+
+    .atelier-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 42px;
+        color: var(--text-secondary);
+        font-size: 0.76rem;
+        font-weight: 750;
+    }
+
+    .atelier-toggle input {
+        width: 17px;
+        height: 17px;
+        accent-color: var(--brand-pink);
+    }
+
+    .atelier-empty {
+        display: grid;
+        place-items: center;
+        min-height: 110px;
+        border: 1px dashed rgba(255, 255, 255, 0.13);
+        border-radius: 20px;
+        color: var(--text-tertiary);
+        text-align: center;
+        padding: 18px;
+    }
+
+    .atelier-progress {
+        height: 9px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .atelier-progress span {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: var(--brand-gradient);
+    }
+
+    .atelier-check {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 11px;
+    }
+
+    .atelier-check input {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--brand-pink);
+    }
+
+    @media (max-width: 1020px) {
+        .atelier-repeat--resource,
+        .atelier-repeat--step {
+            grid-template-columns: 1fr;
+        }
+
+        .atelier-filter-panel {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .atelier-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .atelier-compact-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 640px) {
+        .atelier-header,
+        .atelier-item,
+        .atelier-grid,
+        .atelier-toolbar,
+        .atelier-filter-panel,
+        .atelier-compact-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .atelier-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .atelier-stat {
+            display: flex;
+            min-height: 44px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 9px 11px;
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 122, 61, 0.10), transparent 52%),
+                rgba(255, 255, 255, 0.035);
+        }
+
+        .atelier-stat span {
+            font-size: 0.56rem;
+            letter-spacing: 0.04em;
+        }
+
+        .atelier-stat strong {
+            margin-top: 0;
+            font-size: 1.08rem;
+        }
+
+        .atelier-actions,
+        .atelier-row-actions {
+            justify-content: flex-start;
+        }
+
+        .atelier-header,
+        .atelier-card,
+        .atelier-modal__panel {
+            padding: 16px;
+            border-radius: 24px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section
+    class="atelier"
+    data-recipe-atelier
+    data-items-url="{{ path('app_recipe_atelier_items') }}"
+    data-save-url="{{ path('app_recipe_atelier_item_create') }}"
+    data-item-url-template="{{ path('app_recipe_atelier_item_get', { id: 0 }) }}"
+    data-delete-url-template="{{ path('app_recipe_atelier_item_delete', { id: 0 }) }}"
+    data-favorite-url-template="{{ path('app_recipe_atelier_item_favorite', { id: 0 }) }}"
+    data-duplicate-url-template="{{ path('app_recipe_atelier_item_duplicate', { id: 0 }) }}"
+    data-pdf-url-template="{{ path('app_recipe_atelier_item_pdf', { id: 0 }) }}"
+    data-csrf-token="{{ csrf_token('recipe_atelier_item') }}"
+>
+    <section class="atelier-panel atelier-header" aria-labelledby="atelier-title">
+        <div>
+            <span class="atelier-eyebrow">Recipe Atelier</span>
+            <h1 class="atelier-title" id="atelier-title"><span class="accent">Recipe Atelier</span></h1>
+            <p class="atelier-muted">Atelier de fiches reutilisables pour recettes, routines, kits, menus, listes et process.</p>
+        </div>
+        <div class="atelier-actions">
+            <button class="atelier-button atelier-button--primary" type="button" data-open-form>Creer une fiche</button>
+        </div>
+    </section>
+
+    <section class="atelier-stats" aria-label="Resume Atelier">
+        <article class="atelier-stat"><span>Fiches</span><strong data-total-count>0</strong></article>
+        <article class="atelier-stat"><span>Favoris</span><strong data-favorite-count>0</strong></article>
+        <article class="atelier-stat"><span>Ressources</span><strong data-resource-count>0</strong></article>
+        <article class="atelier-stat"><span>Etapes</span><strong data-step-count>0</strong></article>
+    </section>
+
+    <section class="atelier-panel atelier-card">
+        <div class="atelier-section-head">
+            <h2 class="atelier-card__title">Fiches Atelier</h2>
+            <span class="atelier-muted" data-visible-count>0 fiche</span>
+        </div>
+        <div class="atelier-toolbar">
+            <input class="atelier-input" type="search" placeholder="Rechercher une fiche, un tag, une note..." data-search>
+            <button class="atelier-button atelier-filter-toggle" type="button" data-toggle-filters>
+                Filtres <span class="atelier-badge" data-filter-count>0</span>
+            </button>
+        </div>
+        <div class="atelier-filter-panel" data-filter-panel>
+            <select class="atelier-select" data-type-filter></select>
+            <select class="atelier-select" data-category-filter></select>
+            <select class="atelier-select" data-difficulty-filter></select>
+            <select class="atelier-select" data-favorite-filter>
+                <option value="all">Toutes</option>
+                <option value="favorite">Favoris</option>
+            </select>
+        </div>
+        <div class="atelier-list" data-item-list></div>
+    </section>
+
+    <div class="atelier-modal" data-modal="form" aria-hidden="true">
+        <div class="atelier-modal__panel" role="dialog" aria-modal="true" aria-labelledby="atelier-form-title">
+            <div class="atelier-modal__head">
+                <div>
+                    <h2 class="atelier-card__title" id="atelier-form-title" data-form-title>Fiche Atelier</h2>
+                    <div class="atelier-muted" data-dynamic-hint>Ressources et etapes restent generales pour tous les usages.</div>
+                    <div class="atelier-create-note" data-create-note>Creation rapide: commence par nommer la fiche. Tu ajouteras les ressources, etapes et notes juste apres.</div>
+                </div>
+                <button class="atelier-icon-button" type="button" data-close-modal aria-label="Fermer">&times;</button>
+            </div>
+
+            <form class="atelier-form" data-form autocomplete="off">
+                <input type="hidden" name="id">
+                <div class="atelier-compact-summary" data-edit-summary aria-label="Resume de la fiche">
+                    <div class="atelier-compact-summary__item"><span>Type</span><strong data-summary-type>-</strong></div>
+                    <div class="atelier-compact-summary__item"><span>Categorie</span><strong data-summary-category>-</strong></div>
+                    <div class="atelier-compact-summary__item"><span>Ressources</span><strong data-summary-resources>0</strong></div>
+                    <div class="atelier-compact-summary__item"><span>Etapes</span><strong data-summary-steps>0</strong></div>
+                </div>
+
+                <div class="atelier-grid">
+                    <label class="atelier-field atelier-field--full">
+                        <span class="atelier-label">Titre</span>
+                        <input class="atelier-input" name="title" type="text" placeholder="Sauce tomate maison, kit pique-nique..." required>
+                    </label>
+                    <label class="atelier-field">
+                        <span class="atelier-label">Type</span>
+                        <select class="atelier-select" name="type" data-type-select></select>
+                    </label>
+                    <label class="atelier-field">
+                        <span class="atelier-label">Categorie</span>
+                        <select class="atelier-select" name="category" data-category-select></select>
+                    </label>
+                </div>
+
+                <section class="atelier-disclosure" data-advanced data-disclosure="details">
+                    <button class="atelier-disclosure__toggle" type="button" data-toggle-disclosure="details">
+                        <span class="atelier-disclosure__title">
+                            <strong>Details optionnels</strong>
+                            <span>Duree, quantite, difficulte, statut, tags et notes.</span>
+                        </span>
+                        <span class="atelier-disclosure__chevron">v</span>
+                    </button>
+                    <div class="atelier-disclosure__body">
+                        <div class="atelier-grid">
+                            <label class="atelier-field">
+                                <span class="atelier-label">Tags</span>
+                                <input class="atelier-input" name="tags" type="text" placeholder="rapide, batch, froid">
+                            </label>
+                            <label class="atelier-field">
+                                <span class="atelier-label">Duree estimee (min)</span>
+                                <input class="atelier-input" name="estimatedDuration" type="number" min="0" step="1" placeholder="25">
+                            </label>
+                            <label class="atelier-field">
+                                <span class="atelier-label" data-quantity-label>Quantite cible</span>
+                                <input class="atelier-input" name="targetQuantity" type="text" placeholder="4 portions, 1 kit, 1 semaine">
+                            </label>
+                            <label class="atelier-field">
+                                <span class="atelier-label">Difficulte</span>
+                                <select class="atelier-select" name="difficulty" data-difficulty-select></select>
+                            </label>
+                            <label class="atelier-field">
+                                <span class="atelier-label">Statut</span>
+                                <select class="atelier-select" name="status" data-status-select></select>
+                            </label>
+                            <label class="atelier-field atelier-field--full">
+                                <span class="atelier-label">Notes</span>
+                                <textarea class="atelier-textarea" name="notes" placeholder="Notes utiles, astuces, conservation, contexte..."></textarea>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="atelier-disclosure" data-advanced data-disclosure="resources">
+                    <button class="atelier-disclosure__toggle" type="button" data-toggle-disclosure="resources">
+                        <span class="atelier-disclosure__title">
+                            <strong data-resources-title>Ressources</strong>
+                            <span data-resources-count>0 element</span>
+                        </span>
+                        <span class="atelier-disclosure__chevron">v</span>
+                    </button>
+                    <div class="atelier-disclosure__body">
+                        <div class="atelier-section-head">
+                            <h3 class="atelier-card__title">Liste</h3>
+                            <button class="atelier-button" type="button" data-add-resource>Ajouter</button>
+                        </div>
+                        <div class="atelier-repeat-list" data-resources></div>
+                    </div>
+                </section>
+
+                <section class="atelier-disclosure" data-advanced data-disclosure="steps">
+                    <button class="atelier-disclosure__toggle" type="button" data-toggle-disclosure="steps">
+                        <span class="atelier-disclosure__title">
+                            <strong data-steps-title>Etapes</strong>
+                            <span data-steps-count>0 element</span>
+                        </span>
+                        <span class="atelier-disclosure__chevron">v</span>
+                    </button>
+                    <div class="atelier-disclosure__body">
+                        <div class="atelier-section-head">
+                            <h3 class="atelier-card__title">Liste</h3>
+                            <button class="atelier-button" type="button" data-add-step>Ajouter</button>
+                        </div>
+                        <div class="atelier-repeat-list" data-steps></div>
+                    </div>
+                </section>
+                <div class="atelier-actions">
+                    <button class="atelier-button atelier-button--primary" type="submit" data-submit-label>Enregistrer</button>
+                    <button class="atelier-button" type="button" data-reset-form>Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="atelier-modal" data-modal="view" aria-hidden="true">
+        <div class="atelier-modal__panel" role="dialog" aria-modal="true" aria-labelledby="atelier-view-title">
+            <div class="atelier-modal__head">
+                <div>
+                    <h2 class="atelier-card__title" id="atelier-view-title">Voir la fiche</h2>
+                    <div class="atelier-muted">Lecture complete de la fiche Atelier.</div>
+                </div>
+                <div class="atelier-actions">
+                    <a class="atelier-button atelier-button--primary" href="#" data-pdf-link>Exporter PDF</a>
+                    <button class="atelier-icon-button" type="button" data-close-modal aria-label="Fermer">&times;</button>
+                </div>
+            </div>
+            <div class="atelier-view" data-view-content></div>
+        </div>
+    </div>
+</section>
+
+<script>
+(() => {
+    const root = document.querySelector('[data-recipe-atelier]');
+    if (!root) return;
+
+    const config = {{ atelierConfig|json_encode|raw }};
+    const form = root.querySelector('[data-form]');
+    const list = root.querySelector('[data-item-list]');
+    const search = root.querySelector('[data-search]');
+    const typeFilter = root.querySelector('[data-type-filter]');
+    const categoryFilter = root.querySelector('[data-category-filter]');
+    const difficultyFilter = root.querySelector('[data-difficulty-filter]');
+    const favoriteFilter = root.querySelector('[data-favorite-filter]');
+    const filterPanel = root.querySelector('[data-filter-panel]');
+    const filterCount = root.querySelector('[data-filter-count]');
+    const typeSelect = root.querySelector('[data-type-select]');
+    const resourcesBox = root.querySelector('[data-resources]');
+    const stepsBox = root.querySelector('[data-steps]');
+
+    let items = [];
+    let editItem = null;
+    let resourceDraft = [];
+    let stepDraft = [];
+
+    const labels = {
+        type: config.types,
+        difficulty: config.difficulties,
+        status: config.statuses,
+        resourceType: config.resourceTypes
+    };
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function optionsFromObject(values, selected = '') {
+        return Object.entries(values).map(([value, label]) => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('');
+    }
+
+    function optionsFromArray(values, selected = '') {
+        return values.map((value) => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('');
+    }
+
+    function routeUrl(template, id) {
+        return template.replace(/\/0(?=\/|$)/, `/${id}`);
+    }
+
+    const icons = {
+        favorite: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.8l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6L7.1 19l.9-5.5-4-3.9 5.5-.8L12 3.8z"/></svg>',
+        view: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+        duplicate: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1"/></svg>',
+        edit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+        delete: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6l1 15h12l1-15"/></svg>'
+    };
+
+    function fillStaticSelects() {
+        typeSelect.innerHTML = optionsFromObject(config.types, 'recipe');
+        root.querySelector('[data-category-select]').innerHTML = optionsFromArray(config.categories, 'Cuisine');
+        root.querySelector('[data-difficulty-select]').innerHTML = optionsFromObject(config.difficulties, 'easy');
+        root.querySelector('[data-status-select]').innerHTML = optionsFromObject(config.statuses, 'draft');
+        typeFilter.innerHTML = '<option value="all">Tous les types</option>' + optionsFromObject(config.types);
+        categoryFilter.innerHTML = '<option value="all">Toutes categories</option>' + optionsFromArray(config.categories);
+        difficultyFilter.innerHTML = '<option value="all">Toutes difficultes</option>' + optionsFromObject(config.difficulties);
+    }
+
+    function openModal(name) {
+        const modal = root.querySelector(`[data-modal="${name}"]`);
+        if (!modal) return;
+        modal.dataset.open = 'true';
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModals() {
+        root.querySelectorAll('[data-modal]').forEach((modal) => {
+            modal.dataset.open = 'false';
+            modal.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    async function loadItems() {
+        const response = await fetch(root.dataset.itemsUrl, { headers: { Accept: 'application/json' } });
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        if (!response.ok) throw new Error('Impossible de charger Recipe Atelier.');
+        const payload = await response.json();
+        items = payload.items || [];
+        render();
+    }
+
+    function filteredItems() {
+        const query = search.value.trim().toLowerCase();
+        return items.filter((item) => {
+            if (typeFilter.value !== 'all' && item.type !== typeFilter.value) return false;
+            if (categoryFilter.value !== 'all' && item.category !== categoryFilter.value) return false;
+            if (difficultyFilter.value !== 'all' && item.difficulty !== difficultyFilter.value) return false;
+            if (favoriteFilter.value === 'favorite' && !item.isFavorite) return false;
+            if (query && ![item.title, item.category, item.tags, item.notes].join(' ').toLowerCase().includes(query)) return false;
+            return true;
+        });
+    }
+
+    function renderStats() {
+        root.querySelector('[data-total-count]').textContent = items.length;
+        root.querySelector('[data-favorite-count]').textContent = items.filter((item) => item.isFavorite).length;
+        root.querySelector('[data-resource-count]').textContent = items.reduce((sum, item) => sum + item.resources.length, 0);
+        root.querySelector('[data-step-count]').textContent = items.reduce((sum, item) => sum + item.steps.length, 0);
+    }
+
+    function updateFilterCount() {
+        const active = [
+            typeFilter.value !== 'all',
+            categoryFilter.value !== 'all',
+            difficultyFilter.value !== 'all',
+            favoriteFilter.value !== 'all'
+        ].filter(Boolean).length;
+        filterCount.textContent = active;
+    }
+
+    function render() {
+        renderStats();
+        updateFilterCount();
+        const visible = filteredItems();
+        root.querySelector('[data-visible-count]').textContent = `${visible.length} fiche${visible.length > 1 ? 's' : ''}`;
+        if (!visible.length) {
+            list.innerHTML = '<div class="atelier-empty">Aucune fiche pour ces filtres.</div>';
+            return;
+        }
+
+        list.innerHTML = visible.map((item) => `
+            <article class="atelier-item">
+                <div>
+                    <div class="atelier-item__title">${escapeHtml(item.title)}</div>
+                    <div class="atelier-item__meta">
+                        ${escapeHtml(labels.type[item.type] || item.type)} - ${escapeHtml(item.category)} - ${escapeHtml(labels.difficulty[item.difficulty] || item.difficulty)}
+                        ${item.estimatedDuration ? ` - ${item.estimatedDuration} min` : ''}
+                        - ${item.resources.length} ressource${item.resources.length > 1 ? 's' : ''}
+                        - ${item.steps.length} etape${item.steps.length > 1 ? 's' : ''}
+                    </div>
+                    <div class="atelier-chips">
+                        ${item.isFavorite ? '<span class="atelier-badge">Favori</span>' : ''}
+                        ${item.tags ? `<span class="atelier-badge">${escapeHtml(item.tags)}</span>` : ''}
+                    </div>
+                </div>
+                <div class="atelier-row-actions">
+                    <button class="atelier-icon-button" type="button" data-favorite="${item.id}" data-active="${item.isFavorite ? 'true' : 'false'}" title="Favori" aria-label="Favori">${icons.favorite}</button>
+                    <button class="atelier-icon-button" type="button" data-view="${item.id}" title="Voir" aria-label="Voir la fiche">${icons.view}</button>
+                    <button class="atelier-icon-button" type="button" data-duplicate="${item.id}" title="Dupliquer" aria-label="Dupliquer">${icons.duplicate}</button>
+                    <button class="atelier-icon-button" type="button" data-edit="${item.id}" title="Modifier" aria-label="Modifier">${icons.edit}</button>
+                    <button class="atelier-icon-button atelier-button--danger" type="button" data-delete="${item.id}" title="Supprimer" aria-label="Supprimer">${icons.delete}</button>
+                </div>
+            </article>
+        `).join('');
+    }
+
+    function updateDynamicLabels() {
+        const type = typeSelect.value;
+        const resourceTitle = root.querySelector('[data-resources-title]');
+        const stepsTitle = root.querySelector('[data-steps-title]');
+        const quantityLabel = root.querySelector('[data-quantity-label]');
+        const hint = root.querySelector('[data-dynamic-hint]');
+        if (resourceTitle) resourceTitle.textContent = type === 'recipe' ? 'Ingredients' : type === 'kit' ? 'Materiel' : 'Ressources';
+        if (stepsTitle) stepsTitle.textContent = type === 'routine' ? 'Actions' : type === 'kit' ? 'Preparation' : 'Etapes';
+        if (quantityLabel) quantityLabel.textContent = type === 'recipe' ? 'Portions' : 'Quantite cible';
+        hint.textContent = type === 'recipe'
+            ? 'Mode recette: ressources affichees comme ingredients.'
+            : type === 'kit'
+                ? 'Mode kit: ressources pensees comme materiel et contenu.'
+                : type === 'routine'
+                    ? 'Mode routine: les etapes deviennent des actions.'
+                    : 'Ressources et etapes restent generales pour tous les usages.';
+    }
+
+    function toggleAdvanced(show) {
+        root.querySelectorAll('[data-advanced]').forEach((element) => {
+            element.hidden = !show;
+        });
+        root.querySelector('[data-edit-summary]').dataset.visible = show ? 'true' : 'false';
+        root.querySelector('[data-create-note]').hidden = show;
+        root.querySelector('[data-submit-label]').textContent = show ? 'Enregistrer' : 'Creer la fiche';
+    }
+
+    function setDisclosure(name, isOpen) {
+        const disclosure = root.querySelector(`[data-disclosure="${name}"]`);
+        if (disclosure) disclosure.dataset.open = isOpen ? 'true' : 'false';
+    }
+
+    function resetDisclosures() {
+        root.querySelectorAll('[data-disclosure]').forEach((disclosure) => {
+            disclosure.dataset.open = 'false';
+        });
+    }
+
+    function updateFormSummary() {
+        root.querySelector('[data-summary-type]').textContent = labels.type[typeSelect.value] || typeSelect.value || '-';
+        root.querySelector('[data-summary-category]').textContent = form.elements.category.value || '-';
+        root.querySelector('[data-summary-resources]').textContent = `${resourceDraft.length}`;
+        root.querySelector('[data-summary-steps]').textContent = `${stepDraft.length}`;
+        root.querySelector('[data-resources-count]').textContent = `${resourceDraft.length} element${resourceDraft.length > 1 ? 's' : ''}`;
+        root.querySelector('[data-steps-count]').textContent = `${stepDraft.length} element${stepDraft.length > 1 ? 's' : ''}`;
+    }
+
+    function listOrEmpty(entries, renderEntry, emptyText) {
+        if (!entries.length) return `<div class="atelier-empty">${escapeHtml(emptyText)}</div>`;
+        return `<ul class="atelier-view__list">${entries.map((entry, index) => `<li class="atelier-view__line">${renderEntry(entry, index)}</li>`).join('')}</ul>`;
+    }
+
+    function renderView(item) {
+        root.querySelector('[data-pdf-link]').href = routeUrl(root.dataset.pdfUrlTemplate, item.id);
+
+        const resources = listOrEmpty(item.resources, (resource) => {
+            const quantity = [resource.quantity, resource.unit].filter(Boolean).join(' ');
+            const optional = resource.isOptional ? ' - optionnel' : '';
+            return `<strong>${escapeHtml(resource.name)}</strong>${quantity ? ` - ${escapeHtml(quantity)}` : ''}${optional}`;
+        }, 'Aucune ressource renseignee.');
+
+        const steps = listOrEmpty(item.steps, (step, index) => {
+            const duration = step.duration ? ` - ${escapeHtml(step.duration)}` : '';
+            const condition = step.condition ? ` - ${escapeHtml(step.condition)}` : '';
+            const note = step.note ? `<br><span>${escapeHtml(step.note)}</span>` : '';
+            return `<strong>${index + 1}. ${escapeHtml(step.action)}</strong>${duration}${condition}${note}`;
+        }, 'Aucune etape renseignee.');
+
+        root.querySelector('[data-view-content]').innerHTML = `
+            <section class="atelier-view__hero">
+                <h2 class="atelier-view__title">${escapeHtml(item.title)}</h2>
+                <div class="atelier-item__meta">
+                    ${escapeHtml(labels.type[item.type] || item.type)} - ${escapeHtml(item.category)} - ${escapeHtml(labels.difficulty[item.difficulty] || item.difficulty)}
+                    ${item.estimatedDuration ? ` - ${item.estimatedDuration} min` : ''}
+                    ${item.targetQuantity ? ` - ${escapeHtml(item.targetQuantity)}` : ''}
+                </div>
+                <div class="atelier-chips">
+                    <span class="atelier-badge">${escapeHtml(labels.status[item.status] || item.status)}</span>
+                    ${item.isFavorite ? '<span class="atelier-badge">Favori</span>' : ''}
+                    ${item.tags ? `<span class="atelier-badge">${escapeHtml(item.tags)}</span>` : ''}
+                </div>
+            </section>
+            <section class="atelier-view__section">
+                <h3>Ressources</h3>
+                ${resources}
+            </section>
+            <section class="atelier-view__section">
+                <h3>Etapes</h3>
+                ${steps}
+            </section>
+            <section class="atelier-view__section">
+                <h3>Notes</h3>
+                <div class="atelier-view__line">${item.notes ? escapeHtml(item.notes) : 'Aucune note renseignee.'}</div>
+            </section>
+        `;
+        openModal('view');
+    }
+
+    function renderDrafts() {
+        resourcesBox.innerHTML = resourceDraft.length ? resourceDraft.map((resource, index) => `
+            <div class="atelier-repeat atelier-repeat--resource">
+                <label class="atelier-field"><span class="atelier-label">Nom</span><input class="atelier-input" data-resource-field="name" data-index="${index}" value="${escapeHtml(resource.name)}" placeholder="Farine, couteau, lien..."></label>
+                <label class="atelier-field"><span class="atelier-label">Quantite</span><input class="atelier-input" data-resource-field="quantity" data-index="${index}" value="${escapeHtml(resource.quantity)}" placeholder="200"></label>
+                <label class="atelier-field"><span class="atelier-label">Unite</span><select class="atelier-select" data-resource-field="unit" data-index="${index}">${optionsFromArray(config.units, resource.unit || 'unite')}</select></label>
+                <label class="atelier-field"><span class="atelier-label">Type</span><select class="atelier-select" data-resource-field="resourceType" data-index="${index}">${optionsFromObject(config.resourceTypes, resource.resourceType || 'ingredient')}</select></label>
+                <button class="atelier-icon-button atelier-button--danger" type="button" data-remove-resource="${index}" title="Retirer">×</button>
+                <label class="atelier-toggle"><input type="checkbox" data-resource-field="isOptional" data-index="${index}" ${resource.isOptional ? 'checked' : ''}>Optionnel</label>
+            </div>
+        `).join('') : '<div class="atelier-empty">Aucune ressource. Ajoute seulement ce qui est utile.</div>';
+
+        stepsBox.innerHTML = stepDraft.length ? stepDraft.map((step, index) => `
+            <div class="atelier-repeat atelier-repeat--step">
+                <label class="atelier-field"><span class="atelier-label">Action</span><input class="atelier-input" data-step-field="action" data-index="${index}" value="${escapeHtml(step.action)}" placeholder="Melanger, verifier, preparer..."></label>
+                <label class="atelier-field"><span class="atelier-label">Duree</span><input class="atelier-input" data-step-field="duration" data-index="${index}" value="${escapeHtml(step.duration)}" placeholder="10 min"></label>
+                <label class="atelier-field"><span class="atelier-label">Condition</span><input class="atelier-input" data-step-field="condition" data-index="${index}" value="${escapeHtml(step.condition)}" placeholder="Feu doux, avant service..."></label>
+                <button class="atelier-icon-button atelier-button--danger" type="button" data-remove-step="${index}" title="Retirer">×</button>
+                <label class="atelier-field atelier-field--full"><span class="atelier-label">Note</span><input class="atelier-input" data-step-field="note" data-index="${index}" value="${escapeHtml(step.note)}" placeholder="Astuce, controle, attention..."></label>
+            </div>
+        `).join('') : '<div class="atelier-empty">Aucune etape. Une fiche simple peut rester sans etape.</div>';
+
+        updateFormSummary();
+    }
+
+    function resetForm(item = null) {
+        form.reset();
+        editItem = item;
+        form.elements.id.value = item?.id || '';
+        form.elements.title.value = item?.title || '';
+        form.elements.type.value = item?.type || 'recipe';
+        form.elements.category.value = item?.category || 'Cuisine';
+        form.elements.tags.value = item?.tags || '';
+        form.elements.estimatedDuration.value = item?.estimatedDuration || '';
+        form.elements.targetQuantity.value = item?.targetQuantity || '';
+        form.elements.difficulty.value = item?.difficulty || 'easy';
+        form.elements.status.value = item?.status || 'draft';
+        form.elements.notes.value = item?.notes || '';
+        resourceDraft = structuredClone(item?.resources || []);
+        stepDraft = structuredClone(item?.steps || []);
+        root.querySelector('[data-form-title]').textContent = item ? 'Modifier la fiche' : 'Nouvelle fiche rapide';
+        toggleAdvanced(Boolean(item));
+        resetDisclosures();
+        updateDynamicLabels();
+        renderDrafts();
+    }
+
+    function readForm() {
+        const data = new FormData(form);
+        return {
+            id: data.get('id'),
+            title: data.get('title'),
+            type: data.get('type'),
+            category: data.get('category'),
+            tags: data.get('tags'),
+            estimatedDuration: data.get('estimatedDuration'),
+            targetQuantity: data.get('targetQuantity'),
+            difficulty: data.get('difficulty'),
+            status: data.get('status'),
+            notes: data.get('notes'),
+            isFavorite: editItem?.isFavorite || false,
+            resources: resourceDraft.map((resource, index) => ({ ...resource, sortOrder: index })),
+            steps: stepDraft.map((step, index) => ({ ...step, sortOrder: index }))
+        };
+    }
+
+    async function saveItem(payload) {
+        const url = payload.id ? routeUrl(root.dataset.itemUrlTemplate, payload.id) : root.dataset.saveUrl;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-Token': root.dataset.csrfToken },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(async () => ({ error: await response.text().catch(() => '') }));
+            throw new Error(error.error || 'Impossible d enregistrer la fiche.');
+        }
+        return response.json();
+    }
+
+    async function action(url) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { Accept: 'application/json', 'X-CSRF-Token': root.dataset.csrfToken }
+        });
+        if (!response.ok) throw new Error('Action impossible.');
+    }
+
+    async function deleteItem(id) {
+        const response = await fetch(routeUrl(root.dataset.deleteUrlTemplate, id), {
+            method: 'DELETE',
+            headers: { Accept: 'application/json', 'X-CSRF-Token': root.dataset.csrfToken }
+        });
+        if (!response.ok) throw new Error('Suppression impossible.');
+    }
+
+    fillStaticSelects();
+    resetForm();
+    loadItems().catch((error) => { list.innerHTML = `<div class="atelier-empty">${escapeHtml(error.message)}</div>`; });
+
+    root.querySelector('[data-open-form]').addEventListener('click', () => { resetForm(); openModal('form'); });
+    root.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', closeModals));
+    root.querySelectorAll('[data-modal]').forEach((modal) => modal.addEventListener('click', (event) => { if (event.target === modal) closeModals(); }));
+    root.querySelector('[data-reset-form]').addEventListener('click', () => { resetForm(); closeModals(); });
+    root.querySelector('[data-toggle-filters]').addEventListener('click', () => {
+        filterPanel.dataset.open = filterPanel.dataset.open === 'true' ? 'false' : 'true';
+    });
+    root.querySelectorAll('[data-toggle-disclosure]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const disclosure = root.querySelector(`[data-disclosure="${button.dataset.toggleDisclosure}"]`);
+            if (disclosure) disclosure.dataset.open = disclosure.dataset.open === 'true' ? 'false' : 'true';
+        });
+    });
+    typeSelect.addEventListener('change', () => {
+        updateDynamicLabels();
+        updateFormSummary();
+    });
+    form.elements.category.addEventListener('change', updateFormSummary);
+    [search, typeFilter, categoryFilter, difficultyFilter, favoriteFilter].forEach((control) => control.addEventListener('input', render));
+    [typeFilter, categoryFilter, difficultyFilter, favoriteFilter].forEach((control) => control.addEventListener('change', render));
+
+    root.querySelector('[data-add-resource]').addEventListener('click', () => {
+        resourceDraft.push({ name: '', quantity: '', unit: 'unite', resourceType: 'ingredient', isOptional: false, note: '' });
+        setDisclosure('resources', true);
+        renderDrafts();
+    });
+    root.querySelector('[data-add-step]').addEventListener('click', () => {
+        stepDraft.push({ action: '', duration: '', condition: '', note: '', isDone: false });
+        setDisclosure('steps', true);
+        renderDrafts();
+    });
+    form.addEventListener('input', (event) => {
+        const target = event.target;
+        const index = Number(target.dataset.index);
+        if (target.dataset.resourceField) resourceDraft[index][target.dataset.resourceField] = target.type === 'checkbox' ? target.checked : target.value;
+        if (target.dataset.stepField) stepDraft[index][target.dataset.stepField] = target.value;
+    });
+
+    form.addEventListener('click', (event) => {
+        const resourceRemove = event.target.closest('[data-remove-resource]');
+        const stepRemove = event.target.closest('[data-remove-step]');
+        if (resourceRemove) resourceDraft.splice(Number(resourceRemove.dataset.removeResource), 1);
+        if (stepRemove) stepDraft.splice(Number(stepRemove.dataset.removeStep), 1);
+        if (resourceRemove || stepRemove) renderDrafts();
+    });
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        try {
+            const wasCreation = !form.elements.id.value;
+            const payload = await saveItem(readForm());
+            await loadItems();
+            if (wasCreation && payload.item) {
+                resetForm(payload.item);
+                openModal('form');
+                return;
+            }
+            closeModals();
+            resetForm();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    list.addEventListener('click', async (event) => {
+        const view = event.target.closest('[data-view]');
+        const edit = event.target.closest('[data-edit]');
+        const remove = event.target.closest('[data-delete]');
+        const favorite = event.target.closest('[data-favorite]');
+        const duplicate = event.target.closest('[data-duplicate]');
+        try {
+            if (view) {
+                const item = items.find((entry) => String(entry.id) === view.dataset.view);
+                if (item) renderView(item);
+            }
+            if (edit) {
+                const item = items.find((entry) => String(entry.id) === edit.dataset.edit);
+                if (item) { resetForm(item); openModal('form'); }
+            }
+            if (remove) {
+                const item = items.find((entry) => String(entry.id) === remove.dataset.delete);
+                if (!item || !confirm(`Supprimer "${item.title}" ?`)) return;
+                await deleteItem(item.id);
+                await loadItems();
+            }
+            if (favorite) {
+                await action(routeUrl(root.dataset.favoriteUrlTemplate, favorite.dataset.favorite));
+                await loadItems();
+            }
+            if (duplicate) {
+                await action(routeUrl(root.dataset.duplicateUrlTemplate, duplicate.dataset.duplicate));
+                await loadItems();
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+})();
+</script>
+{% endblock %}

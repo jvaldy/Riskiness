@@ -20,17 +20,6 @@ final class ModulePageController extends AbstractController
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    #[Route('/recipe-atelier', name: 'app_recipe_atelier', methods: ['GET'])]
-    public function recipeAtelier(Security $security): Response
-    {
-        return new Response($this->renderPlaceholder(
-            'Recipe Atelier',
-            'Organiser des recettes, structurer les ingredients et retrouver rapidement chaque preparation.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
     #[Route('/doc-sentinel', name: 'app_doc_sentinel', methods: ['GET'])]
     public function docSentinel(Security $security): Response
     {
