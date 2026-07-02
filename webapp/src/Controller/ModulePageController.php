@@ -20,17 +20,6 @@ final class ModulePageController extends AbstractController
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    #[Route('/doc-sentinel', name: 'app_doc_sentinel', methods: ['GET'])]
-    public function docSentinel(Security $security): Response
-    {
-        return new Response($this->renderPlaceholder(
-            'Doc Sentinel',
-            'Surveiller les dates d expiration, les relances et les documents sensibles avec precision.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
     #[Route('/cycle-care', name: 'app_cycle_care', methods: ['GET'])]
     public function cycleCare(Security $security): Response
     {

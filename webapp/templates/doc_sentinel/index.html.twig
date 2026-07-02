@@ -1,0 +1,1062 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Doc Sentinel{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .sentinel {
+        margin: 28px 4px 10px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .sentinel-panel {
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 34%),
+            radial-gradient(circle at left, rgba(245, 36, 94, 0.10), transparent 30%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+            var(--surface-1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .sentinel-hero,
+    .sentinel-card {
+        padding: 18px;
+    }
+
+    .sentinel-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .sentinel-eyebrow::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--brand-gradient);
+        box-shadow: 0 0 18px rgba(245, 36, 94, 0.55);
+    }
+
+    .sentinel-title {
+        margin: 12px 0 6px;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .sentinel-title .accent {
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .sentinel-muted {
+        color: var(--text-tertiary);
+        font-size: 0.78rem;
+        line-height: 1.45;
+    }
+
+    .sentinel-lead {
+        margin: 0;
+        max-width: 760px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .sentinel-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .sentinel-stat {
+        min-height: 54px;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .sentinel-stat span {
+        display: block;
+        color: var(--text-tertiary);
+        font-size: 0.58rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .sentinel-stat strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.2rem;
+        letter-spacing: -0.03em;
+    }
+
+    .sentinel-card__head,
+    .sentinel-toolbar,
+    .sentinel-actions,
+    .sentinel-row-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sentinel-card__head {
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .sentinel-card__title {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    .sentinel-form,
+    .sentinel-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .sentinel-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .sentinel-field {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .sentinel-field--full {
+        grid-column: 1 / -1;
+    }
+
+    .sentinel-label {
+        color: var(--text-secondary);
+        font-size: 0.76rem;
+        font-weight: 750;
+    }
+
+    .sentinel-input,
+    .sentinel-select,
+    .sentinel-textarea {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--text-primary);
+        outline: none;
+        padding: 0 12px;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .sentinel-select option {
+        background: #120B16;
+        color: #fff;
+    }
+
+    .sentinel-input::placeholder,
+    .sentinel-textarea::placeholder {
+        color: rgba(255, 255, 255, 0.36);
+    }
+
+    .sentinel-input:hover,
+    .sentinel-select:hover,
+    .sentinel-textarea:hover {
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.065);
+    }
+
+    .sentinel-input:focus,
+    .sentinel-select:focus,
+    .sentinel-textarea:focus {
+        border-color: rgba(245, 36, 94, 0.78);
+        box-shadow: 0 0 0 4px rgba(245, 36, 94, 0.14);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .sentinel-textarea {
+        min-height: 82px;
+        padding-top: 11px;
+        resize: vertical;
+    }
+
+    .sentinel-button,
+    .sentinel-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .sentinel-button {
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 15px;
+        gap: 8px;
+        font-size: 0.82rem;
+        font-weight: 850;
+    }
+
+    .sentinel-icon-button {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        flex: none;
+    }
+
+    .sentinel-button:hover,
+    .sentinel-icon-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.075);
+    }
+
+    .sentinel-button--primary {
+        border-color: transparent;
+        background: var(--brand-gradient);
+        box-shadow: 0 14px 30px rgba(245, 36, 94, 0.18);
+    }
+
+    .sentinel-button--danger:hover,
+    .sentinel-icon-button--danger:hover {
+        border-color: rgba(255, 92, 107, 0.42);
+        background: rgba(255, 92, 107, 0.10);
+        color: #ffb9c2;
+    }
+
+    .sentinel-button svg,
+    .sentinel-icon-button svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2.1;
+        fill: none;
+        pointer-events: none;
+    }
+
+    .sentinel-toolbar {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) minmax(150px, 0.5fr) minmax(150px, 0.5fr);
+        gap: 9px;
+        margin-bottom: 12px;
+    }
+
+    .sentinel-item {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 17px;
+        background: rgba(255, 255, 255, 0.035);
+        overflow: hidden;
+    }
+
+    .sentinel-item[data-status="expired"] {
+        border-color: rgba(255, 92, 107, 0.34);
+        background: rgba(255, 92, 107, 0.07);
+    }
+
+    .sentinel-item[data-status="soon"],
+    .sentinel-item[data-status="renew"] {
+        border-color: rgba(255, 122, 61, 0.32);
+        background: rgba(255, 122, 61, 0.055);
+    }
+
+    .sentinel-item[data-status="archived"] {
+        opacity: 0.62;
+    }
+
+    .sentinel-item__summary {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        width: 100%;
+        min-height: 58px;
+        padding: 10px 12px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .sentinel-item__title {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+        font-weight: 900;
+    }
+
+    .sentinel-item__title span:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sentinel-item__meta {
+        margin-top: 4px;
+        color: var(--text-tertiary);
+        font-size: 0.76rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .sentinel-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 21px;
+        padding: 0 8px;
+        border-radius: var(--radius-pill);
+        background: rgba(245, 36, 94, 0.14);
+        color: rgba(255, 229, 237, 0.92);
+        font-size: 0.66rem;
+        font-weight: 850;
+        white-space: nowrap;
+    }
+
+    .sentinel-badge--expired {
+        background: rgba(255, 92, 107, 0.18);
+        color: #ffd6dc;
+    }
+
+    .sentinel-badge--soon,
+    .sentinel-badge--renew {
+        background: rgba(255, 122, 61, 0.16);
+        color: #ffe1d3;
+    }
+
+    .sentinel-badge--current {
+        background: rgba(70, 255, 145, 0.10);
+        color: #d7ffe5;
+    }
+
+    .sentinel-item__chevron {
+        width: 17px;
+        height: 17px;
+        color: var(--text-tertiary);
+        transition: transform 180ms ease;
+    }
+
+    .sentinel-item[data-open="true"] .sentinel-item__chevron {
+        transform: rotate(180deg);
+    }
+
+    .sentinel-item__details {
+        display: none;
+        gap: 10px;
+        padding: 0 12px 12px;
+    }
+
+    .sentinel-item[data-open="true"] .sentinel-item__details {
+        display: grid;
+    }
+
+    .sentinel-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .sentinel-detail {
+        padding: 10px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .sentinel-detail strong {
+        display: block;
+        margin-bottom: 2px;
+        color: var(--text-tertiary);
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .sentinel-empty {
+        display: grid;
+        place-items: center;
+        min-height: 130px;
+        padding: 18px;
+        border: 1px dashed rgba(255, 255, 255, 0.13);
+        border-radius: 20px;
+        color: var(--text-tertiary);
+        text-align: center;
+    }
+
+    .sentinel-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(7, 5, 10, 0.70);
+        backdrop-filter: blur(10px);
+    }
+
+    .sentinel-modal[data-open="true"] {
+        display: flex;
+    }
+
+    .sentinel-modal__panel {
+        width: min(100%, 720px);
+        max-height: min(88vh, 860px);
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.14), transparent 35%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.035)),
+            #15111B;
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    .sentinel-modal__panel--compact {
+        width: min(100%, 520px);
+    }
+
+    .sentinel-modal__lead {
+        margin: -4px 0 14px;
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+        line-height: 1.55;
+    }
+
+    .sentinel-renew-context {
+        margin-bottom: 12px;
+        padding: 10px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.45;
+    }
+
+    .sentinel-renew-context strong {
+        display: block;
+        color: var(--text-primary);
+        font-size: 0.92rem;
+        margin-bottom: 2px;
+    }
+
+    .sentinel-feedback {
+        display: grid;
+        gap: 14px;
+    }
+
+    .sentinel-feedback__message {
+        margin: 0;
+        color: var(--text-secondary);
+        line-height: 1.55;
+    }
+
+    @media (max-width: 700px) {
+        .sentinel {
+            margin-top: 20px;
+        }
+
+        .sentinel-hero,
+        .sentinel-card {
+            padding: 16px;
+            border-radius: 24px;
+        }
+
+        .sentinel-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 7px;
+        }
+
+        .sentinel-stat {
+            display: flex;
+            min-height: 44px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 9px 11px;
+        }
+
+        .sentinel-stat strong {
+            margin-top: 0;
+            font-size: 1.08rem;
+        }
+
+        .sentinel-grid,
+        .sentinel-toolbar,
+        .sentinel-detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section
+    class="sentinel"
+    data-doc-sentinel
+    data-documents-url="{{ path('app_doc_sentinel_documents') }}"
+    data-save-url="{{ path('app_doc_sentinel_document_save') }}"
+    data-delete-url-template="{{ path('app_doc_sentinel_document_delete', { id: 0 }) }}"
+    data-archive-url-template="{{ path('app_doc_sentinel_document_archive', { id: 0 }) }}"
+    data-renew-url-template="{{ path('app_doc_sentinel_document_renew', { id: 0 }) }}"
+    data-csrf-token="{{ csrf_token('doc_sentinel_document') }}"
+>
+    <section class="sentinel-panel sentinel-hero" aria-labelledby="doc-sentinel-title">
+        <span class="sentinel-eyebrow">Doc Sentinel</span>
+        <h1 class="sentinel-title" id="doc-sentinel-title"><span class="accent">Doc Sentinel</span></h1>
+        <p class="sentinel-lead">Surveille tes documents importants, leurs dates d'expiration et de renouvellements.</p>
+    </section>
+
+    <section class="sentinel-stats" aria-label="Resume documents">
+        <article class="sentinel-stat"><span>Total</span><strong data-summary="total">0</strong></article>
+        <article class="sentinel-stat"><span>A jour</span><strong data-summary="current">0</strong></article>
+        <article class="sentinel-stat"><span>Bientot</span><strong data-summary="soon">0</strong></article>
+        <article class="sentinel-stat"><span>Expires</span><strong data-summary="expired">0</strong></article>
+    </section>
+
+        <section class="sentinel-panel sentinel-card" aria-labelledby="doc-sentinel-list-title">
+            <div class="sentinel-card__head">
+                <h2 class="sentinel-card__title" id="doc-sentinel-list-title">Documents</h2>
+                <div class="sentinel-actions">
+                    <span class="sentinel-badge" data-visible-count>0</span>
+                    <button class="sentinel-button sentinel-button--primary" type="button" data-open-form>
+                        Ajouter
+                    </button>
+                </div>
+            </div>
+
+            <div class="sentinel-toolbar">
+                <input class="sentinel-input" type="search" placeholder="Rechercher un document..." data-search>
+                <select class="sentinel-select" data-category-filter>
+                    <option value="all">Toutes categories</option>
+                    {% for key, label in categories %}
+                        <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <select class="sentinel-select" data-status-filter>
+                    <option value="active">Alertes actives</option>
+                    <option value="all">Tous</option>
+                    {% for key, label in statusLabels %}
+                        <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="sentinel-list" data-document-list></div>
+        </section>
+
+    <div class="sentinel-modal" data-form-modal aria-hidden="true">
+        <div class="sentinel-modal__panel" role="dialog" aria-modal="true" aria-labelledby="doc-sentinel-form-title">
+            <div class="sentinel-card__head">
+                <h2 class="sentinel-card__title" id="doc-sentinel-form-title">Ajouter un document</h2>
+                <span class="sentinel-badge" data-form-mode>Nouveau</span>
+            </div>
+
+            <form class="sentinel-form" data-document-form autocomplete="off">
+                <input type="hidden" name="id">
+                <div class="sentinel-grid">
+                    <label class="sentinel-field">
+                        <span class="sentinel-label">Nom</span>
+                        <input class="sentinel-input" name="name" type="text" placeholder="Passeport, assurance habitation..." required data-name-input>
+                    </label>
+
+                    <label class="sentinel-field">
+                        <span class="sentinel-label">Categorie</span>
+                        <select class="sentinel-select" name="category">
+                            {% for key, label in categories %}
+                                <option value="{{ key }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label class="sentinel-field">
+                        <span class="sentinel-label">Date d expiration</span>
+                        <input class="sentinel-input" name="expirationDate" type="date" required>
+                    </label>
+
+                    <label class="sentinel-field">
+                        <span class="sentinel-label">Rappel</span>
+                        <input class="sentinel-input" name="reminderDate" type="date">
+                    </label>
+
+                    <label class="sentinel-field sentinel-field--full">
+                        <span class="sentinel-label">Note</span>
+                        <textarea class="sentinel-textarea" name="note" placeholder="Numero, organisme, demarche, lien utile..."></textarea>
+                    </label>
+                </div>
+
+                <div class="sentinel-actions">
+                    <button class="sentinel-button sentinel-button--primary" type="submit">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+                        Enregistrer
+                    </button>
+                    <button class="sentinel-button" type="button" data-reset-form>Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="sentinel-modal" data-renew-modal aria-hidden="true">
+        <div class="sentinel-modal__panel sentinel-modal__panel--compact" role="dialog" aria-modal="true" aria-labelledby="doc-sentinel-renew-title">
+            <div class="sentinel-card__head">
+                <h2 class="sentinel-card__title" id="doc-sentinel-renew-title">Renouveler le document</h2>
+                <span class="sentinel-badge">Mise a jour</span>
+            </div>
+            <p class="sentinel-modal__lead">Indique la nouvelle date d expiration. Le document repassera automatiquement dans le suivi actif.</p>
+            <div class="sentinel-renew-context" data-renew-context></div>
+            <form class="sentinel-form" data-renew-form autocomplete="off">
+                <input type="hidden" name="id">
+                <div class="sentinel-grid">
+                    <label class="sentinel-field">
+                        <span class="sentinel-label">Nouvelle date d expiration</span>
+                        <input class="sentinel-input" name="expirationDate" type="date" required data-renew-date>
+                    </label>
+                    <label class="sentinel-field">
+                        <span class="sentinel-label">Rappel</span>
+                        <input class="sentinel-input" name="reminderDate" type="date">
+                    </label>
+                </div>
+                <div class="sentinel-actions">
+                    <button class="sentinel-button sentinel-button--primary" type="submit">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2"/><path d="M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h4"/><path d="M6 22v-4H2"/></svg>
+                        Mettre a jour
+                    </button>
+                    <button class="sentinel-button" type="button" data-cancel-renew>Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="sentinel-modal" data-feedback-modal aria-hidden="true">
+        <div class="sentinel-modal__panel sentinel-modal__panel--compact sentinel-feedback" role="alertdialog" aria-modal="true" aria-labelledby="doc-sentinel-feedback-title">
+            <div class="sentinel-card__head">
+                <h2 class="sentinel-card__title" id="doc-sentinel-feedback-title">Action impossible</h2>
+                <span class="sentinel-badge sentinel-badge--expired">Erreur</span>
+            </div>
+            <p class="sentinel-feedback__message" data-feedback-message></p>
+            <div class="sentinel-actions">
+                <button class="sentinel-button sentinel-button--primary" type="button" data-close-feedback>Compris</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(() => {
+    const root = document.querySelector('[data-doc-sentinel]');
+    if (!root) return;
+
+    const form = root.querySelector('[data-document-form]');
+    const list = root.querySelector('[data-document-list]');
+    const search = root.querySelector('[data-search]');
+    const categoryFilter = root.querySelector('[data-category-filter]');
+    const statusFilter = root.querySelector('[data-status-filter]');
+    const visibleCount = root.querySelector('[data-visible-count]');
+    const formMode = root.querySelector('[data-form-mode]');
+    const formModal = root.querySelector('[data-form-modal]');
+    const renewModal = root.querySelector('[data-renew-modal]');
+    const renewForm = root.querySelector('[data-renew-form]');
+    const renewContext = root.querySelector('[data-renew-context]');
+    const feedbackModal = root.querySelector('[data-feedback-modal]');
+    const feedbackMessage = root.querySelector('[data-feedback-message]');
+
+    const categoryLabels = {{ categories|json_encode|raw }};
+
+    const statusLabels = {{ statusLabels|json_encode|raw }};
+
+    const icons = {
+        edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+        archive: '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10h14V9"/><path d="M10 13h4"/>',
+        renew: '<path d="M21 12a9 9 0 0 1-15.5 6.2"/><path d="M3 12A9 9 0 0 1 18.5 5.8"/><path d="M18 2v4h4"/><path d="M6 22v-4H2"/>',
+        delete: '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/>',
+        chevron: '<path d="m6 9 6 6 6-6"/>'
+    };
+
+    let documents = [];
+
+    function routeUrl(template, id) {
+        return template.replace(/\/0(?=\/|$)/, `/${encodeURIComponent(id)}`);
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function formatDate(value) {
+        if (!value) return '-';
+        const parts = value.split('-');
+        return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : value;
+    }
+
+    async function loadDocuments() {
+        const response = await fetch(root.dataset.documentsUrl, { headers: { Accept: 'application/json' } });
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+        if (!response.ok) throw new Error('Impossible de charger les documents.');
+        const payload = await response.json();
+        documents = Array.isArray(payload.documents) ? payload.documents : [];
+        renderSummary(payload.summary || {});
+        renderList();
+    }
+
+    async function saveDocument(payload) {
+        const response = await fetch(root.dataset.saveUrl, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': root.dataset.csrfToken
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.error || 'Impossible d enregistrer le document.');
+        }
+    }
+
+    async function postAction(url, payload = {}) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': root.dataset.csrfToken
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.error || 'Action impossible.');
+        }
+    }
+
+    async function deleteDocument(id) {
+        const response = await fetch(routeUrl(root.dataset.deleteUrlTemplate, id), {
+            method: 'DELETE',
+            headers: { Accept: 'application/json', 'X-CSRF-Token': root.dataset.csrfToken }
+        });
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.error || 'Suppression impossible.');
+        }
+    }
+
+    function renderSummary(summary) {
+        ['total', 'current', 'soon', 'expired'].forEach((key) => {
+            const node = root.querySelector(`[data-summary="${key}"]`);
+            if (node) node.textContent = String(summary[key] || 0);
+        });
+    }
+
+    function filteredDocuments() {
+        const query = search.value.trim().toLowerCase();
+        const category = categoryFilter.value;
+        const status = statusFilter.value;
+
+        return documents.filter((document) => {
+            const searchable = [document.name, document.categoryLabel, document.statusLabel, document.note].join(' ').toLowerCase();
+            const matchesQuery = !query || searchable.includes(query);
+            const matchesCategory = category === 'all' || document.category === category;
+            const matchesStatus = status === 'all'
+                || document.status === status
+                || (status === 'active' && document.status !== 'archived');
+
+            return matchesQuery && matchesCategory && matchesStatus;
+        });
+    }
+
+    function detailBlocks(document) {
+        const details = [
+            ['Categorie', document.categoryLabel],
+            ['Statut', document.statusLabel],
+            ['Expiration', formatDate(document.expirationDate)],
+            ['Rappel', formatDate(document.reminderDate)],
+        ];
+
+        if (document.note) {
+            details.push(['Note', document.note]);
+        }
+
+        return details.map(([label, value]) => `
+            <div class="sentinel-detail">
+                <strong>${escapeHtml(label)}</strong>
+                ${escapeHtml(value)}
+            </div>
+        `).join('');
+    }
+
+    function renderList() {
+        const visible = filteredDocuments();
+        visibleCount.textContent = `${visible.length} document${visible.length > 1 ? 's' : ''}`;
+
+        if (!visible.length) {
+            list.innerHTML = '<div class="sentinel-empty">Aucun document pour ces filtres.</div>';
+            return;
+        }
+
+        list.innerHTML = visible.map((document) => `
+            <article class="sentinel-item" data-document="${escapeHtml(document.id)}" data-status="${escapeHtml(document.status)}">
+                <button class="sentinel-item__summary" type="button" data-toggle="${escapeHtml(document.id)}">
+                    <span>
+                        <span class="sentinel-item__title">
+                            <span>${escapeHtml(document.name)}</span>
+                            <span class="sentinel-badge sentinel-badge--${escapeHtml(document.status)}">${escapeHtml(document.statusLabel)}</span>
+                        </span>
+                        <span class="sentinel-item__meta">${escapeHtml(document.categoryLabel)} - expire le ${escapeHtml(formatDate(document.expirationDate))}${document.reminderDate ? ` - rappel ${escapeHtml(formatDate(document.reminderDate))}` : ''}</span>
+                    </span>
+                    <svg class="sentinel-item__chevron" viewBox="0 0 24 24" aria-hidden="true">${icons.chevron}</svg>
+                </button>
+                <div class="sentinel-item__details">
+                    <div class="sentinel-detail-grid">${detailBlocks(document)}</div>
+                    <div class="sentinel-row-actions">
+                        <button class="sentinel-icon-button" type="button" data-edit="${escapeHtml(document.id)}" title="Modifier" aria-label="Modifier">${svg(icons.edit)}</button>
+                        <button class="sentinel-icon-button" type="button" data-renew="${escapeHtml(document.id)}" title="Renouveler" aria-label="Renouveler">${svg(icons.renew)}</button>
+                        <button class="sentinel-icon-button" type="button" data-archive="${escapeHtml(document.id)}" title="${document.archived ? 'Desarchiver' : 'Archiver'}" aria-label="${document.archived ? 'Desarchiver' : 'Archiver'}">${svg(icons.archive)}</button>
+                        <button class="sentinel-icon-button sentinel-icon-button--danger" type="button" data-delete="${escapeHtml(document.id)}" title="Supprimer" aria-label="Supprimer">${svg(icons.delete)}</button>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+    }
+
+    function svg(content) {
+        return `<svg viewBox="0 0 24 24" aria-hidden="true">${content}</svg>`;
+    }
+
+    function openFormModal() {
+        formModal.dataset.open = 'true';
+        formModal.setAttribute('aria-hidden', 'false');
+        setTimeout(() => root.querySelector('[data-name-input]').focus(), 40);
+    }
+
+    function closeFormModal() {
+        formModal.dataset.open = 'false';
+        formModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function openRenewModal(document) {
+        renewForm.elements.id.value = document.id;
+        renewForm.elements.expirationDate.value = document.expirationDate || '';
+        renewForm.elements.reminderDate.value = document.reminderDate || '';
+        renewContext.innerHTML = `
+            <strong>${escapeHtml(document.name)}</strong>
+            Expire actuellement le ${escapeHtml(formatDate(document.expirationDate))}${document.reminderDate ? ` - rappel ${escapeHtml(formatDate(document.reminderDate))}` : ''}
+        `;
+        renewModal.dataset.open = 'true';
+        renewModal.setAttribute('aria-hidden', 'false');
+        setTimeout(() => root.querySelector('[data-renew-date]').focus(), 40);
+    }
+
+    function closeRenewModal() {
+        renewForm.reset();
+        renewModal.dataset.open = 'false';
+        renewModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function showFeedback(message) {
+        feedbackMessage.textContent = message || 'Une erreur est survenue.';
+        feedbackModal.dataset.open = 'true';
+        feedbackModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeFeedback() {
+        feedbackModal.dataset.open = 'false';
+        feedbackModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function readForm() {
+        const data = new FormData(form);
+        return {
+            id: String(data.get('id') || ''),
+            name: String(data.get('name') || '').trim(),
+            category: String(data.get('category') || 'other'),
+            expirationDate: String(data.get('expirationDate') || ''),
+            reminderDate: String(data.get('reminderDate') || ''),
+            note: String(data.get('note') || '').trim(),
+            archived: false
+        };
+    }
+
+    function resetForm() {
+        form.reset();
+        form.elements.id.value = '';
+        form.elements.category.value = 'identity';
+        formMode.textContent = 'Nouveau';
+    }
+
+    function fillForm(document) {
+        form.elements.id.value = document.id;
+        form.elements.name.value = document.name || '';
+        form.elements.category.value = document.category || 'other';
+        form.elements.expirationDate.value = document.expirationDate || '';
+        form.elements.reminderDate.value = document.reminderDate || '';
+        form.elements.note.value = document.note || '';
+        formMode.textContent = 'Edition';
+        openFormModal();
+    }
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = readForm();
+        if (!payload.name) {
+            root.querySelector('[data-name-input]').focus();
+            return;
+        }
+
+        try {
+            await saveDocument(payload);
+            resetForm();
+            closeFormModal();
+            await loadDocuments();
+        } catch (error) {
+            showFeedback(error.message);
+        }
+    });
+
+    root.querySelector('[data-open-form]').addEventListener('click', () => {
+        resetForm();
+        openFormModal();
+    });
+    root.querySelector('[data-reset-form]').addEventListener('click', () => {
+        resetForm();
+        closeFormModal();
+    });
+    formModal.addEventListener('click', (event) => {
+        if (event.target === formModal) {
+            resetForm();
+            closeFormModal();
+        }
+    });
+    renewModal.addEventListener('click', (event) => {
+        if (event.target === renewModal) {
+            closeRenewModal();
+        }
+    });
+    feedbackModal.addEventListener('click', (event) => {
+        if (event.target === feedbackModal) {
+            closeFeedback();
+        }
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && formModal.dataset.open === 'true') {
+            resetForm();
+            closeFormModal();
+        }
+        if (event.key === 'Escape' && renewModal.dataset.open === 'true') {
+            closeRenewModal();
+        }
+        if (event.key === 'Escape' && feedbackModal.dataset.open === 'true') {
+            closeFeedback();
+        }
+    });
+    root.querySelector('[data-cancel-renew]').addEventListener('click', closeRenewModal);
+    root.querySelector('[data-close-feedback]').addEventListener('click', closeFeedback);
+
+    renewForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const id = renewForm.elements.id.value;
+        const expirationDate = renewForm.elements.expirationDate.value;
+        const reminderDate = renewForm.elements.reminderDate.value;
+        if (!id || !expirationDate) {
+            root.querySelector('[data-renew-date]').focus();
+            return;
+        }
+
+        try {
+            await postAction(routeUrl(root.dataset.renewUrlTemplate, id), { expirationDate, reminderDate });
+            closeRenewModal();
+            await loadDocuments();
+        } catch (error) {
+            showFeedback(error.message);
+        }
+    });
+    [search, categoryFilter, statusFilter].forEach((control) => control.addEventListener('input', renderList));
+    [categoryFilter, statusFilter].forEach((control) => control.addEventListener('change', renderList));
+
+    list.addEventListener('click', async (event) => {
+        const toggle = event.target.closest('[data-toggle]');
+        const edit = event.target.closest('[data-edit]');
+        const archive = event.target.closest('[data-archive]');
+        const renew = event.target.closest('[data-renew]');
+        const remove = event.target.closest('[data-delete]');
+
+        try {
+            if (edit) {
+                const document = documents.find((item) => String(item.id) === edit.dataset.edit);
+                if (document) fillForm(document);
+                return;
+            }
+
+            if (archive) {
+                await postAction(routeUrl(root.dataset.archiveUrlTemplate, archive.dataset.archive));
+                await loadDocuments();
+                return;
+            }
+
+            if (renew) {
+                const document = documents.find((item) => String(item.id) === renew.dataset.renew);
+                if (document) openRenewModal(document);
+                return;
+            }
+
+            if (remove) {
+                const document = documents.find((item) => String(item.id) === remove.dataset.delete);
+                if (!document || !confirm(`Supprimer "${document.name}" ?`)) return;
+                await deleteDocument(document.id);
+                await loadDocuments();
+                return;
+            }
+
+            if (toggle) {
+                const item = toggle.closest('.sentinel-item');
+                item.dataset.open = item.dataset.open === 'true' ? 'false' : 'true';
+            }
+        } catch (error) {
+            showFeedback(error.message);
+        }
+    });
+
+    resetForm();
+    loadDocuments().catch((error) => {
+        list.innerHTML = `<div class="sentinel-empty">${escapeHtml(error.message)}</div>`;
+    });
+})();
+</script>
+{% endblock %}
