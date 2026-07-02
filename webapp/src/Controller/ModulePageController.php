@@ -20,17 +20,6 @@ final class ModulePageController extends AbstractController
         ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
     }
 
-    #[Route('/cycle-care', name: 'app_cycle_care', methods: ['GET'])]
-    public function cycleCare(Security $security): Response
-    {
-        return new Response($this->renderPlaceholder(
-            'Cycle Care',
-            'Suivre les cycles, les symptomes et le confort avec une experience douce et discrete.',
-            $this->accountHref($security),
-            $this->accountButtonClass($security)
-        ), Response::HTTP_OK, ['Content-Type' => 'text/html; charset=UTF-8']);
-    }
-
     private function renderPlaceholder(string $title, string $description, string $accountHref, string $accountButtonClass): string
     {
         $safeTitle = htmlspecialchars($title, ENT_QUOTES);

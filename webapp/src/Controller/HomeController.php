@@ -69,7 +69,7 @@ final class HomeController
             [
                 'slug' => 'cycle-care',
                 'title' => 'Cycle Care',
-                'description' => 'Suivre les cycles, noter les signaux et gérer le confort avec tact.',
+                'description' => 'Calculer cycles, phases et prévisions.',
                 'tone' => 'pink',
                 'icon' => $this->iconHeartPulse(),
                 'href' => '/cycle-care',

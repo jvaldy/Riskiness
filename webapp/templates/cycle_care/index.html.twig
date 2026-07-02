@@ -1,0 +1,1487 @@
+{% extends 'auth/layout.html.twig' %}
+
+{% block title %}RISKINESS - Cycle Care{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .cycle {
+        margin: 28px 4px 10px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .cycle-panel {
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.12), transparent 34%),
+            radial-gradient(circle at left, rgba(245, 36, 94, 0.10), transparent 30%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025)),
+            var(--surface-1);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .cycle-hero,
+    .cycle-card {
+        padding: 18px;
+    }
+
+    .cycle-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-pill);
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .cycle-eyebrow::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--brand-gradient);
+        box-shadow: 0 0 18px rgba(245, 36, 94, 0.55);
+    }
+
+    .cycle-title {
+        margin: 12px 0 6px;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .cycle-title .accent {
+        background: var(--brand-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .cycle-lead,
+    .cycle-muted {
+        color: var(--text-secondary);
+        line-height: 1.55;
+    }
+
+    .cycle-lead {
+        margin: 0;
+        max-width: 760px;
+    }
+
+    .cycle-muted {
+        font-size: 0.78rem;
+        color: var(--text-tertiary);
+    }
+
+    .cycle-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .cycle-stat {
+        min-height: 68px;
+        padding: 11px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 17px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .cycle-stat span {
+        display: block;
+        color: var(--text-tertiary);
+        font-size: 0.58rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .cycle-stat strong {
+        display: block;
+        margin-top: 5px;
+        font-size: 1.18rem;
+        letter-spacing: -0.03em;
+    }
+
+    .cycle-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .cycle-stack {
+        display: grid;
+        gap: 16px;
+    }
+
+    .cycle-card__head,
+    .cycle-actions,
+    .cycle-row-actions,
+    .cycle-tabs,
+    .cycle-legend {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+    }
+
+    .cycle-card__head {
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .cycle-card__title {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+    }
+
+    .cycle-button,
+    .cycle-icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .cycle-button {
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 15px;
+        gap: 8px;
+        font-size: 0.82rem;
+        font-weight: 850;
+    }
+
+    .cycle-button--icon {
+        width: 42px;
+        padding: 0;
+        flex: none;
+    }
+
+    .cycle-icon-button {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        flex: none;
+    }
+
+    .cycle-button:hover,
+    .cycle-icon-button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.075);
+    }
+
+    .cycle-button--primary {
+        border-color: transparent;
+        background: var(--brand-gradient);
+        box-shadow: 0 14px 30px rgba(245, 36, 94, 0.18);
+    }
+
+    .cycle-icon-button--danger:hover {
+        border-color: rgba(255, 92, 107, 0.42);
+        background: rgba(255, 92, 107, 0.10);
+        color: #ffb9c2;
+    }
+
+    .cycle-icon-button svg,
+    .cycle-button svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2.1;
+        fill: none;
+        pointer-events: none;
+    }
+
+    .cycle-progress {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .cycle-progress span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--brand-gradient);
+    }
+
+    .cycle-timeline {
+        display: grid;
+        gap: 8px;
+    }
+
+    .cycle-icon-legend {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .cycle-icon-legend__item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+        min-height: 38px;
+        padding: 7px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.035);
+        color: var(--text-secondary);
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .cycle-phase {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .cycle-phase[data-active="true"] {
+        border-color: rgba(245, 36, 94, 0.34);
+        background: rgba(245, 36, 94, 0.10);
+    }
+
+    .cycle-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 0.98rem;
+    }
+
+    .cycle-calendar {
+        display: grid;
+        gap: 7px;
+    }
+
+    .cycle-calendar__week,
+    .cycle-calendar__grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .cycle-calendar__week span {
+        color: var(--text-tertiary);
+        font-size: 0.62rem;
+        font-weight: 850;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    .cycle-day {
+        position: relative;
+        min-height: clamp(82px, 9vw, 118px);
+        padding: 9px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+    }
+
+    .cycle-day[data-has-details="true"] {
+        cursor: pointer;
+    }
+
+    .cycle-day[data-has-details="true"]:hover,
+    .cycle-day[data-open="true"] {
+        z-index: 4;
+        border-color: rgba(245, 36, 94, 0.46);
+        background: rgba(245, 36, 94, 0.08);
+    }
+
+    .cycle-day[data-muted="true"] {
+        opacity: 0.36;
+    }
+
+    .cycle-day[data-today="true"] {
+        border-color: rgba(255, 122, 61, 0.50);
+        box-shadow: inset 0 0 0 1px rgba(255, 122, 61, 0.18);
+    }
+
+    .cycle-day__num {
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 850;
+    }
+
+    .cycle-day__today {
+        display: inline-flex;
+        align-items: center;
+        min-height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: rgba(255, 122, 61, 0.14);
+        color: rgba(255, 235, 224, 0.92);
+        font-size: 0.58rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .cycle-day__icons {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+
+    .cycle-day__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 21px;
+        height: 21px;
+        border-radius: 8px;
+        background: rgba(245, 36, 94, 0.14);
+        font-size: 0.82rem;
+    }
+
+    .cycle-day__icon[data-estimated="true"] {
+        opacity: 0.58;
+        border: 1px dashed rgba(255, 255, 255, 0.24);
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .cycle-day__popover {
+        position: absolute;
+        left: 8px;
+        top: calc(100% - 4px);
+        z-index: 8;
+        display: none;
+        width: min(240px, 74vw);
+        padding: 10px;
+        border: 1px solid rgba(245, 36, 94, 0.24);
+        border-radius: 16px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.14), transparent 38%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)),
+            #160F1B;
+        box-shadow: 0 18px 44px rgba(0, 0, 0, 0.44);
+        color: var(--text-primary);
+    }
+
+    .cycle-day:hover .cycle-day__popover,
+    .cycle-day[data-open="true"] .cycle-day__popover {
+        display: grid;
+        gap: 7px;
+    }
+
+    .cycle-day__detail {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 7px;
+        align-items: start;
+        font-size: 0.72rem;
+        line-height: 1.35;
+    }
+
+    .cycle-day__detail strong {
+        display: block;
+        color: var(--text-primary);
+        font-size: 0.75rem;
+    }
+
+    .cycle-day__detail span:last-child {
+        min-width: 0;
+    }
+
+    .cycle-day__detail small {
+        display: block;
+        margin-top: 2px;
+        color: var(--text-tertiary);
+        font-size: 0.66rem;
+    }
+
+    .cycle-list {
+        display: grid;
+        gap: 8px;
+    }
+
+    .cycle-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.035);
+    }
+
+    .cycle-item__title {
+        font-weight: 900;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .cycle-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 22px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: rgba(245, 36, 94, 0.14);
+        color: rgba(255, 229, 237, 0.92);
+        font-size: 0.68rem;
+        font-weight: 850;
+    }
+
+    .cycle-badge[data-active="true"] {
+        background: rgba(70, 255, 145, 0.10);
+        color: #d7ffe5;
+    }
+
+    .cycle-empty {
+        display: grid;
+        place-items: center;
+        min-height: 112px;
+        padding: 18px;
+        border: 1px dashed rgba(255, 255, 255, 0.13);
+        border-radius: 20px;
+        color: var(--text-tertiary);
+        text-align: center;
+    }
+
+    .cycle-feedback {
+        display: grid;
+        gap: 14px;
+    }
+
+    .cycle-feedback__message {
+        margin: 0;
+        color: var(--text-secondary);
+        line-height: 1.55;
+    }
+
+    .cycle-input,
+    .cycle-select,
+    .cycle-textarea {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.045);
+        color: var(--text-primary);
+        outline: none;
+        padding: 0 12px;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .cycle-select option {
+        background: #120B16;
+        color: #fff;
+    }
+
+    .cycle-input:focus,
+    .cycle-select:focus,
+    .cycle-textarea:focus {
+        border-color: rgba(245, 36, 94, 0.78);
+        box-shadow: 0 0 0 4px rgba(245, 36, 94, 0.14);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .cycle-textarea {
+        min-height: 84px;
+        padding-top: 11px;
+        resize: vertical;
+    }
+
+    .cycle-form,
+    .cycle-form-grid {
+        display: grid;
+        gap: 10px;
+    }
+
+    .cycle-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cycle-field {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .cycle-field--full {
+        grid-column: 1 / -1;
+    }
+
+    .cycle-label {
+        color: var(--text-secondary);
+        font-size: 0.76rem;
+        font-weight: 750;
+    }
+
+    .cycle-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(7, 5, 10, 0.70);
+        backdrop-filter: blur(10px);
+    }
+
+    .cycle-modal[data-open="true"] {
+        display: flex;
+    }
+
+    .cycle-modal__panel {
+        width: min(100%, 660px);
+        max-height: min(88vh, 820px);
+        overflow: auto;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at top right, rgba(255, 122, 61, 0.14), transparent 35%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.035)),
+            #15111B;
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    @media (max-width: 980px) {
+        .cycle-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .cycle {
+            margin: 14px 0 8px;
+            gap: 10px;
+        }
+
+        .cycle-hero,
+        .cycle-card,
+        .cycle-modal__panel {
+            padding: 12px;
+            border-radius: 20px;
+        }
+
+        .cycle-title {
+            margin: 0 0 4px;
+            font-size: clamp(1.65rem, 8vw, 2.15rem);
+            letter-spacing: -0.045em;
+        }
+
+        .cycle-lead,
+        .cycle-muted {
+            font-size: 0.72rem;
+            line-height: 1.42;
+        }
+
+        .cycle-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .cycle-stat {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 7px 10px;
+            border: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 0;
+            background: transparent;
+        }
+
+        .cycle-stat:last-child {
+            border-bottom: 0;
+        }
+
+        .cycle-stat span {
+            font-size: 0.5rem;
+        }
+
+        .cycle-stat strong {
+            margin-top: 0;
+            font-size: 0.78rem;
+            line-height: 1.12;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .cycle-card__head {
+            gap: 7px;
+            margin-bottom: 9px;
+        }
+
+        .cycle-card__title {
+            font-size: 0.9rem;
+        }
+
+    .cycle-actions {
+        gap: 6px;
+    }
+
+    .cycle-actions--toolbar {
+        margin-left: auto;
+    }
+
+    .cycle-actions__spacer {
+        flex: 1 1 auto;
+        min-width: 12px;
+    }
+
+        .cycle-button {
+            min-height: 35px;
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+        }
+
+        .cycle-icon-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 10px;
+        }
+
+        .cycle-progress {
+            height: 7px;
+        }
+
+        .cycle-stack {
+            gap: 10px;
+        }
+
+        .cycle-list {
+            gap: 6px;
+        }
+
+        .cycle-item {
+            gap: 8px;
+            padding: 8px 9px;
+            border-radius: 13px;
+        }
+
+        .cycle-item__title {
+            font-size: 0.82rem;
+        }
+
+        .cycle-badge {
+            min-height: 20px;
+            padding: 0 7px;
+            font-size: 0.62rem;
+        }
+
+        .cycle-form-grid,
+        .cycle-calendar__week,
+        .cycle-calendar__grid {
+            grid-template-columns: repeat(7, minmax(30px, 1fr));
+        }
+
+        .cycle-calendar {
+            overflow-x: auto;
+            gap: 5px;
+            padding-bottom: 2px;
+        }
+
+        .cycle-calendar__week,
+        .cycle-calendar__grid {
+            gap: 4px;
+        }
+
+        .cycle-calendar__week span {
+            font-size: 0.54rem;
+        }
+
+        .cycle-day {
+            min-height: 48px;
+            min-width: 34px;
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .cycle-day__num {
+            font-size: 0.62rem;
+            align-items: flex-start;
+        }
+
+        .cycle-day__today {
+            min-height: 15px;
+            padding: 0 4px;
+            font-size: 0.48rem;
+            letter-spacing: -0.02em;
+        }
+
+        .cycle-day__icons {
+            gap: 3px;
+            margin-top: 5px;
+        }
+
+        .cycle-day__icon {
+            width: 17px;
+            height: 17px;
+            border-radius: 6px;
+            font-size: 0.68rem;
+        }
+
+        .cycle-day__popover {
+            left: 4px;
+            top: calc(100% - 2px);
+            width: min(220px, 78vw);
+            padding: 9px;
+            border-radius: 14px;
+        }
+
+        .cycle-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cycle-input,
+        .cycle-select,
+        .cycle-textarea {
+            min-height: 38px;
+            border-radius: 13px;
+            font-size: 0.82rem;
+        }
+
+        .cycle-textarea {
+            min-height: 70px;
+        }
+
+        .cycle-empty {
+            min-height: 78px;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+        }
+
+        .cycle-icon-legend {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .cycle-icon-legend__item {
+            min-height: 34px;
+            padding: 6px 7px;
+            font-size: 0.72rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section
+    class="cycle"
+    data-cycle-care
+    data-url="{{ path('app_cycle_care_data') }}"
+    data-period-save-url="{{ path('app_cycle_care_period_save') }}"
+    data-period-delete-url-template="{{ path('app_cycle_care_period_delete', { id: 0 }) }}"
+    data-event-save-url="{{ path('app_cycle_care_event_save') }}"
+    data-event-delete-url-template="{{ path('app_cycle_care_event_delete', { id: 0 }) }}"
+    data-csrf-token="{{ csrf_token('cycle_care') }}"
+>
+    <section class="cycle-panel cycle-hero" aria-labelledby="cycle-care-title">
+        <h1 class="cycle-title" id="cycle-care-title"><span class="accent">Cycle Care</span></h1>
+        <p class="cycle-lead">Saisis tes periodes, Cycle Care calcule le reste.</p>
+    </section>
+
+    <section class="cycle-grid" aria-label="Resume Cycle Care">
+        <article class="cycle-stat"><span>Cycle actuel</span><strong data-summary-cycle>--</strong></article>
+        <article class="cycle-stat"><span>Phase</span><strong data-summary-phase>--</strong></article>
+        <article class="cycle-stat"><span>Prochaines regles</span><strong data-summary-period>--</strong></article>
+        <article class="cycle-stat"><span>Fiabilite</span><strong data-summary-reliability>--</strong></article>
+    </section>
+
+    <section class="cycle-panel cycle-card">
+        <div class="cycle-card__head">
+            <h2 class="cycle-card__title">Progression du cycle</h2>
+            <div class="cycle-actions cycle-actions--toolbar">
+                <button class="cycle-button cycle-button--primary" type="button" data-open-period aria-label="Ajouter une periode" title="Ajouter une periode">+ Periode</button>
+                <button class="cycle-button" type="button" data-open-event aria-label="Ajouter un event" title="Ajouter un event">+ Event</button>
+                <button class="cycle-button" type="button" data-open-events aria-label="Mes events" title="Mes events">Mes events</button>
+                <span class="cycle-actions__spacer" aria-hidden="true"></span>
+                <button class="cycle-button cycle-button--icon" type="button" data-open-history aria-label="Historique des regles" title="Historique des regles">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3s6 6.2 6 11a6 6 0 0 1-12 0c0-4.8 6-11 6-11z"/>
+                    </svg>
+                </button>
+                <button class="cycle-button cycle-button--icon" type="button" data-open-info aria-label="Informations" title="Informations">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 11v5"/>
+                        <path d="M12 8h.01"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="cycle-progress" aria-label="Progression du cycle"><span data-cycle-progress></span></div>
+        <p class="cycle-muted" data-cycle-progress-label>Ajoute une premiere periode pour demarrer.</p>
+    </section>
+
+    <div class="cycle-layout">
+        <section class="cycle-panel cycle-card">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title">Calendrier</h2>
+                <div class="cycle-actions">
+                    <button class="cycle-icon-button" type="button" data-prev-month aria-label="Mois precedent">‹</button>
+                    <span class="cycle-badge" data-calendar-title>--</span>
+                    <button class="cycle-icon-button" type="button" data-next-month aria-label="Mois suivant">›</button>
+                </div>
+            </div>
+            <div class="cycle-calendar">
+                <div class="cycle-calendar__week">
+                    <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+                </div>
+                <div class="cycle-calendar__grid" data-calendar-grid></div>
+            </div>
+        </section>
+    </div>
+
+    <div class="cycle-modal" data-info-modal aria-hidden="true">
+        <div class="cycle-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cycle-info-title">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title" id="cycle-info-title">Timeline des phases</h2>
+                <button class="cycle-icon-button" type="button" data-close-info aria-label="Fermer">×</button>
+            </div>
+            <div class="cycle-timeline" data-phase-timeline></div>
+            <div class="cycle-icon-legend" aria-label="Icones des evenements">
+                {% for key, item in eventTypes %}
+                    <div class="cycle-icon-legend__item">
+                        <span class="cycle-icon" data-icon-key="{{ item.icon }}"></span>
+                        <span>{{ item.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="cycle-modal" data-period-modal aria-hidden="true">
+        <div class="cycle-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cycle-period-title">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title" id="cycle-period-title">Ajouter une periode</h2>
+                <span class="cycle-badge" data-period-mode>Nouveau</span>
+            </div>
+            <form class="cycle-form" data-period-form autocomplete="off">
+                <input type="hidden" name="id">
+                <div class="cycle-form-grid">
+                    <label class="cycle-field">
+                        <span class="cycle-label">Date de debut</span>
+                        <input class="cycle-input" type="date" name="startDate" required data-period-start>
+                    </label>
+                    <label class="cycle-field">
+                        <span class="cycle-label">Date de fin</span>
+                        <input class="cycle-input" type="date" name="endDate" required>
+                    </label>
+                    <label class="cycle-field cycle-field--full">
+                        <span class="cycle-label">Note optionnelle</span>
+                        <textarea class="cycle-textarea" name="note" placeholder="Contexte utile, sans journal detaille..."></textarea>
+                    </label>
+                </div>
+                <div class="cycle-actions">
+                    <button class="cycle-button cycle-button--primary" type="submit">Enregistrer</button>
+                    <button class="cycle-button" type="button" data-close-period>Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="cycle-modal" data-event-modal aria-hidden="true">
+        <div class="cycle-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cycle-event-title">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title" id="cycle-event-title">Ajouter un evenement</h2>
+                <span class="cycle-badge">Secondaire</span>
+            </div>
+            <form class="cycle-form" data-event-form autocomplete="off">
+                <div class="cycle-form-grid">
+                    <label class="cycle-field">
+                        <span class="cycle-label">Date</span>
+                        <input class="cycle-input" type="date" name="eventDate" required data-event-date>
+                    </label>
+                    <label class="cycle-field">
+                        <span class="cycle-label">Type</span>
+                        <select class="cycle-select" name="type">
+                            {% for key, item in eventTypes %}
+                                <option value="{{ key }}">{{ item.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="cycle-field cycle-field--full">
+                        <span class="cycle-label">Note</span>
+                        <textarea class="cycle-textarea" name="note" placeholder="Note courte optionnelle..."></textarea>
+                    </label>
+                </div>
+                <div class="cycle-actions">
+                    <button class="cycle-button cycle-button--primary" type="submit">Ajouter</button>
+                    <button class="cycle-button" type="button" data-close-event>Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="cycle-modal" data-events-modal aria-hidden="true">
+        <div class="cycle-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cycle-events-title">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title" id="cycle-events-title">Mes events</h2>
+                <div class="cycle-actions">
+                    <button class="cycle-icon-button" type="button" data-prev-events-month aria-label="Mois precedent">‹</button>
+                    <span class="cycle-badge" data-events-month-title>--</span>
+                    <button class="cycle-icon-button" type="button" data-next-events-month aria-label="Mois suivant">›</button>
+                    <span class="cycle-badge" data-event-count>0 evenement</span>
+                    <button class="cycle-icon-button" type="button" data-close-events aria-label="Fermer">×</button>
+                </div>
+            </div>
+            <div class="cycle-list" data-event-list></div>
+        </div>
+    </div>
+
+    <div class="cycle-modal" data-history-modal aria-hidden="true">
+        <div class="cycle-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cycle-history-title">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title" id="cycle-history-title">Historique des regles</h2>
+                <div class="cycle-actions">
+                    <button class="cycle-icon-button" type="button" data-prev-history-month aria-label="Mois precedent">‹</button>
+                    <span class="cycle-badge" data-history-month-title>--</span>
+                    <button class="cycle-icon-button" type="button" data-next-history-month aria-label="Mois suivant">›</button>
+                    <span class="cycle-badge" data-period-count>0 periode</span>
+                    <button class="cycle-icon-button" type="button" data-close-history aria-label="Fermer">×</button>
+                </div>
+            </div>
+            <div class="cycle-list" data-period-list></div>
+        </div>
+    </div>
+
+    <div class="cycle-modal" data-feedback-modal aria-hidden="true">
+        <div class="cycle-modal__panel cycle-feedback" role="alertdialog" aria-modal="true" aria-labelledby="cycle-feedback-title">
+            <div class="cycle-card__head">
+                <h2 class="cycle-card__title" id="cycle-feedback-title">Action impossible</h2>
+                <span class="cycle-badge">Erreur</span>
+            </div>
+            <p class="cycle-feedback__message" data-feedback-message></p>
+            <div class="cycle-actions">
+                <button class="cycle-button cycle-button--primary" type="button" data-close-feedback>Compris</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(() => {
+    const root = document.querySelector('[data-cycle-care]');
+    if (!root) return;
+
+    const infoModal = root.querySelector('[data-info-modal]');
+    const periodModal = root.querySelector('[data-period-modal]');
+    const eventModal = root.querySelector('[data-event-modal]');
+    const eventsModal = root.querySelector('[data-events-modal]');
+    const historyModal = root.querySelector('[data-history-modal]');
+    const feedbackModal = root.querySelector('[data-feedback-modal]');
+    const periodForm = root.querySelector('[data-period-form]');
+    const eventForm = root.querySelector('[data-event-form]');
+    const phaseTimeline = root.querySelector('[data-phase-timeline]');
+    const calendarGrid = root.querySelector('[data-calendar-grid]');
+    const periodList = root.querySelector('[data-period-list]');
+    const eventList = root.querySelector('[data-event-list]');
+    const eventCount = root.querySelector('[data-event-count]');
+    const feedbackMessage = root.querySelector('[data-feedback-message]');
+    const periodMode = root.querySelector('[data-period-mode]');
+    const icons = {
+        drop: '🩸',
+        egg: '🥚',
+        baby: '👶',
+        eggplant: '🍆',
+        shield: '🛡',
+        pill: '💊',
+        moon: '🌙',
+        cloud: '☁',
+        calendar: '◌',
+        range: '◇',
+        note: '✎',
+        leaf: '🌿',
+        sprout: '🌱',
+        check: '✓',
+        alert: '!'
+    };
+
+    let state = { periods: [], events: [], insights: null };
+    let monthCursor = new Date();
+    let historyMonthCursor = new Date();
+    let eventsMonthCursor = new Date();
+
+    function routeUrl(template, id) {
+        return template.replace(/\/0(?=\/|$)/, `/${encodeURIComponent(id)}`);
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function iso(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function parseDate(value) {
+        const [year, month, day] = String(value || '').split('-').map(Number);
+        return year ? new Date(year, month - 1, day) : null;
+    }
+
+    function formatDate(value) {
+        const date = parseDate(value);
+        return date ? date.toLocaleDateString('fr-FR') : '--';
+    }
+
+    function daysBetween(a, b) {
+        return Math.round((parseDate(b) - parseDate(a)) / 86400000);
+    }
+
+    async function request(url, options = {}) {
+        const response = await fetch(url, options);
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return null;
+        }
+        if (!response.ok) {
+            const payload = await response.json().catch(() => ({}));
+            throw new Error(payload.error || 'Action impossible.');
+        }
+        return response.json();
+    }
+
+    async function load() {
+        const payload = await request(root.dataset.url, { headers: { Accept: 'application/json' } });
+        if (!payload) return;
+        state = payload;
+        render();
+    }
+
+    function render() {
+        renderSummary();
+        renderIconLegend();
+        renderTimeline();
+        renderCalendar();
+        renderPeriods();
+        renderEvents();
+    }
+
+    function renderIconLegend() {
+        root.querySelectorAll('[data-icon-key]').forEach((item) => {
+            item.textContent = icons[item.dataset.iconKey] || '◌';
+        });
+    }
+
+    function renderSummary() {
+        const insights = state.insights || {};
+        const hasCycle = Boolean(insights.cycleDay);
+        root.querySelector('[data-summary-cycle]').textContent = hasCycle ? `Jour ${insights.cycleDay} / ${insights.averageCycle}` : '--';
+        root.querySelector('[data-summary-phase]').textContent = hasCycle ? (insights.currentPhase?.label || '--') : '--';
+        root.querySelector('[data-summary-period]').textContent = formatDate(insights.nextPeriodDate);
+        root.querySelector('[data-summary-reliability]').textContent = hasCycle ? (insights.reliability?.label || '--') : '--';
+        root.querySelector('[data-cycle-progress]').style.width = `${insights.cycleProgress || 0}%`;
+        root.querySelector('[data-cycle-progress-label]').textContent = insights.cycleDay
+            ? `Jour ${insights.cycleDay} sur ${insights.averageCycle}. ${insights.cycleProfile?.label || 'Cycle en calcul'}. Prochaine ovulation estimee: ${formatDate(insights.nextOvulationDate)}.`
+            : 'Ajoute une premiere periode pour demarrer les estimations.';
+    }
+
+    function renderTimeline() {
+        const active = state.insights?.currentPhase?.key;
+        phaseTimeline.innerHTML = (state.insights?.timeline || []).map((phase) => `
+            <article class="cycle-phase" data-active="${phase.key === active ? 'true' : 'false'}">
+                <span class="cycle-icon">${icons[phase.icon] || '◌'}</span>
+                <div>
+                    <strong>${escapeHtml(phase.label)}</strong>
+                    <div class="cycle-muted">Jours ${phase.from} a ${phase.to}</div>
+                </div>
+                <span class="cycle-badge">${phase.key === active ? 'Actuel' : 'Phase'}</span>
+            </article>
+        `).join('') || '<div class="cycle-empty">Ajoute des periodes pour afficher la timeline.</div>';
+    }
+
+    function dayMarks(dateIso) {
+        const marks = [];
+        state.periods.forEach((period) => {
+            if (dateIso >= period.startDate && dateIso <= period.endDate) {
+                marks.push({
+                    icon: 'drop',
+                    estimated: false,
+                    title: 'Regles confirmees',
+                    detail: `Du ${formatDate(period.startDate)} au ${formatDate(period.endDate)}`,
+                    note: period.note || ''
+                });
+            }
+        });
+        (state.insights?.predictions || []).forEach((prediction) => {
+            const isPredictedPeriod = dateIso >= prediction.periodStart && dateIso <= prediction.periodEnd;
+            if (!isPredictedPeriod && dateIso >= prediction.periodStartMin && dateIso <= prediction.periodStartMax) {
+                marks.push({ icon: 'range', estimated: true, title: 'Plage de prevision', detail: `${formatDate(prediction.periodStartMin)} - ${formatDate(prediction.periodStartMax)}` });
+            }
+            if (dateIso >= prediction.periodStart && dateIso <= prediction.periodEnd) {
+                marks.push({ icon: 'calendar', estimated: true, title: 'Regles estimees', detail: `Autour du ${formatDate(prediction.periodStart)} (${formatDate(prediction.periodStartMin)} - ${formatDate(prediction.periodStartMax)})` });
+            }
+            if (dateIso >= prediction.fertileStart && dateIso <= prediction.fertileEnd) {
+                marks.push({ icon: 'sprout', estimated: true, title: 'Fenetre fertile estimee', detail: `${formatDate(prediction.fertileStart)} - ${formatDate(prediction.fertileEnd)}` });
+            }
+            if (dateIso === prediction.ovulation) {
+                marks.push({ icon: 'egg', estimated: true, title: 'Ovulation estimee', detail: formatDate(prediction.ovulation) });
+            }
+        });
+        state.events.forEach((event) => {
+            if (dateIso === event.eventDate) {
+                marks.push({
+                    icon: event.icon,
+                    estimated: false,
+                    title: event.label,
+                    detail: formatDate(event.eventDate),
+                    note: event.note || ''
+                });
+            }
+        });
+        return marks.slice(0, 3);
+    }
+
+    function renderCalendar() {
+        const year = monthCursor.getFullYear();
+        const month = monthCursor.getMonth();
+        root.querySelector('[data-calendar-title]').textContent = monthCursor.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        const start = new Date(year, month, 1);
+        const offset = (start.getDay() + 6) % 7;
+        const gridStart = new Date(year, month, 1 - offset);
+        const todayIso = iso(new Date());
+        const days = [];
+        for (let i = 0; i < 42; ++i) {
+            const current = new Date(gridStart);
+            current.setDate(gridStart.getDate() + i);
+            const currentIso = iso(current);
+            const marks = dayMarks(currentIso);
+            const details = marks.map((mark) => `
+                <div class="cycle-day__detail">
+                    <span class="cycle-icon">${icons[mark.icon] || '◌'}</span>
+                    <span>
+                        <strong>${escapeHtml(mark.title)}</strong>
+                        <small>${escapeHtml(mark.detail || '')}${mark.estimated ? ' - estimation' : ''}</small>
+                        ${mark.note ? `<small>${escapeHtml(mark.note)}</small>` : ''}
+                    </span>
+                </div>
+            `).join('');
+            days.push(`
+                <article class="cycle-day" data-calendar-day data-has-details="${marks.length ? 'true' : 'false'}" data-muted="${current.getMonth() === month ? 'false' : 'true'}" data-today="${currentIso === todayIso ? 'true' : 'false'}" tabindex="${marks.length ? '0' : '-1'}">
+                    <div class="cycle-day__num">
+                        <span>${current.getDate()}</span>
+                        ${currentIso === todayIso ? '<span class="cycle-day__today" aria-label="Aujourd hui">Auj.</span>' : ''}
+                    </div>
+                    <div class="cycle-day__icons">
+                        ${marks.map((mark) => `<span class="cycle-day__icon" data-estimated="${mark.estimated ? 'true' : 'false'}" title="${escapeHtml(mark.title)}">${icons[mark.icon] || '◌'}</span>`).join('')}
+                    </div>
+                    ${details ? `<div class="cycle-day__popover" role="tooltip">${details}</div>` : ''}
+                </article>
+            `);
+        }
+        calendarGrid.innerHTML = days.join('');
+    }
+
+    function renderPeriods() {
+        const selectedMonth = monthKey(historyMonthCursor);
+        const periods = state.periods.filter((period) => periodTouchesMonth(period, selectedMonth));
+
+        root.querySelector('[data-history-month-title]').textContent = formatMonth(selectedMonth);
+        root.querySelector('[data-period-count]').textContent = `${periods.length} periode${periods.length > 1 ? 's' : ''}`;
+        if (!periods.length) {
+            periodList.innerHTML = '<div class="cycle-empty">Aucune periode pour ce mois.</div>';
+            return;
+        }
+        periodList.innerHTML = periods.map((period) => {
+            const periodIndex = state.periods.findIndex((item) => item.id === period.id);
+            const next = state.periods[periodIndex + 1];
+            const cycleGap = next ? `${daysBetween(next.startDate, period.startDate)} jours entre deux debuts` : 'Derniere periode saisie';
+            return `
+                <article class="cycle-item">
+                    <div>
+                        <div class="cycle-item__title">Du ${formatDate(period.startDate)} au ${formatDate(period.endDate)}</div>
+                        <div class="cycle-muted">${period.duration} jour${period.duration > 1 ? 's' : ''} - ${cycleGap}${period.note ? ` - ${escapeHtml(period.note)}` : ''}</div>
+                    </div>
+                    <div class="cycle-row-actions">
+                        <button class="cycle-icon-button" type="button" data-edit-period="${period.id}" title="Modifier" aria-label="Modifier">${svgEdit()}</button>
+                        <button class="cycle-icon-button cycle-icon-button--danger" type="button" data-delete-period="${period.id}" title="Supprimer" aria-label="Supprimer">${svgTrash()}</button>
+                    </div>
+                </article>
+            `;
+        }).join('');
+    }
+
+    function renderEvents() {
+        const selectedMonth = monthKey(eventsMonthCursor);
+        const events = state.events.filter((event) => event.eventDate.startsWith(selectedMonth));
+
+        root.querySelector('[data-events-month-title]').textContent = formatMonth(selectedMonth);
+        eventCount.textContent = `${events.length} evenement${events.length > 1 ? 's' : ''}`;
+        if (!events.length) {
+            eventList.innerHTML = '<div class="cycle-empty">Aucun evenement pour ce mois.</div>';
+            return;
+        }
+        eventList.innerHTML = events.map((event) => `
+            <article class="cycle-item">
+                <div>
+                    <div class="cycle-item__title"><span class="cycle-icon">${icons[event.icon] || '◌'}</span> ${escapeHtml(event.label)}</div>
+                    <div class="cycle-muted">${formatDate(event.eventDate)}${event.note ? ` - ${escapeHtml(event.note)}` : ''}</div>
+                </div>
+                <button class="cycle-icon-button cycle-icon-button--danger" type="button" data-delete-event="${event.id}" title="Supprimer" aria-label="Supprimer">${svgTrash()}</button>
+            </article>
+        `).join('');
+    }
+
+    function monthKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function formatMonth(value) {
+        const [year, month] = String(value || '').split('-').map(Number);
+        if (!year || !month) return 'Mois inconnu';
+
+        return new Date(year, month - 1, 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    }
+
+    function shiftMonth(date, offset) {
+        return new Date(date.getFullYear(), date.getMonth() + offset, 1);
+    }
+
+    function periodTouchesMonth(period, month) {
+        const [year, monthNumber] = month.split('-').map(Number);
+        const monthStart = iso(new Date(year, monthNumber - 1, 1));
+        const monthEnd = iso(new Date(year, monthNumber, 0));
+
+        return period.startDate <= monthEnd && period.endDate >= monthStart;
+    }
+
+    function svgEdit() {
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+    }
+
+    function svgTrash() {
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>';
+    }
+
+    function openModal(modal) {
+        modal.dataset.open = 'true';
+        modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal(modal) {
+        modal.dataset.open = 'false';
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function showFeedback(message) {
+        feedbackMessage.textContent = message || 'Une erreur est survenue.';
+        openModal(feedbackModal);
+    }
+
+    function resetPeriodForm(period = null) {
+        periodForm.reset();
+        periodForm.elements.id.value = period?.id || '';
+        periodForm.elements.startDate.value = period?.startDate || '';
+        periodForm.elements.endDate.value = period?.endDate || '';
+        periodForm.elements.note.value = period?.note || '';
+        periodMode.textContent = period ? 'Edition' : 'Nouveau';
+    }
+
+    root.querySelector('[data-open-period]').addEventListener('click', () => {
+        resetPeriodForm();
+        openModal(periodModal);
+        setTimeout(() => root.querySelector('[data-period-start]').focus(), 40);
+    });
+    root.querySelector('[data-open-info]').addEventListener('click', () => openModal(infoModal));
+    root.querySelector('[data-open-history]').addEventListener('click', () => {
+        historyMonthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
+        renderPeriods();
+        openModal(historyModal);
+    });
+    root.querySelector('[data-open-events]').addEventListener('click', () => {
+        eventsMonthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth(), 1);
+        renderEvents();
+        openModal(eventsModal);
+    });
+    root.querySelector('[data-open-event]').addEventListener('click', () => {
+        eventForm.reset();
+        eventForm.elements.eventDate.value = iso(new Date());
+        openModal(eventModal);
+        setTimeout(() => root.querySelector('[data-event-date]').focus(), 40);
+    });
+    root.querySelector('[data-close-info]').addEventListener('click', () => closeModal(infoModal));
+    root.querySelector('[data-close-events]').addEventListener('click', () => closeModal(eventsModal));
+    root.querySelector('[data-close-history]').addEventListener('click', () => closeModal(historyModal));
+    root.querySelector('[data-close-period]').addEventListener('click', () => closeModal(periodModal));
+    root.querySelector('[data-close-event]').addEventListener('click', () => closeModal(eventModal));
+    root.querySelector('[data-close-feedback]').addEventListener('click', () => closeModal(feedbackModal));
+    [infoModal, periodModal, eventModal, eventsModal, historyModal, feedbackModal].forEach((modal) => modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal(modal);
+    }));
+    root.querySelector('[data-prev-month]').addEventListener('click', () => {
+        monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() - 1, 1);
+        renderCalendar();
+    });
+    root.querySelector('[data-next-month]').addEventListener('click', () => {
+        monthCursor = new Date(monthCursor.getFullYear(), monthCursor.getMonth() + 1, 1);
+        renderCalendar();
+    });
+    root.querySelector('[data-prev-history-month]').addEventListener('click', () => {
+        historyMonthCursor = shiftMonth(historyMonthCursor, -1);
+        renderPeriods();
+    });
+    root.querySelector('[data-next-history-month]').addEventListener('click', () => {
+        historyMonthCursor = shiftMonth(historyMonthCursor, 1);
+        renderPeriods();
+    });
+    root.querySelector('[data-prev-events-month]').addEventListener('click', () => {
+        eventsMonthCursor = shiftMonth(eventsMonthCursor, -1);
+        renderEvents();
+    });
+    root.querySelector('[data-next-events-month]').addEventListener('click', () => {
+        eventsMonthCursor = shiftMonth(eventsMonthCursor, 1);
+        renderEvents();
+    });
+    calendarGrid.addEventListener('click', (event) => {
+        const day = event.target.closest('[data-calendar-day][data-has-details="true"]');
+        if (!day) return;
+
+        const isOpen = day.dataset.open === 'true';
+        calendarGrid.querySelectorAll('[data-calendar-day][data-open="true"]').forEach((item) => {
+            item.dataset.open = 'false';
+        });
+        day.dataset.open = isOpen ? 'false' : 'true';
+    });
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('[data-calendar-day]')) return;
+        calendarGrid.querySelectorAll('[data-calendar-day][data-open="true"]').forEach((item) => {
+            item.dataset.open = 'false';
+        });
+    });
+
+    periodForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = new FormData(periodForm);
+        try {
+            await request(root.dataset.periodSaveUrl, {
+                method: 'POST',
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-Token': root.dataset.csrfToken },
+                body: JSON.stringify({
+                    id: data.get('id'),
+                    startDate: data.get('startDate'),
+                    endDate: data.get('endDate'),
+                    note: data.get('note')
+                })
+            });
+            closeModal(periodModal);
+            await load();
+        } catch (error) {
+            showFeedback(error.message);
+        }
+    });
+
+    eventForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = new FormData(eventForm);
+        try {
+            await request(root.dataset.eventSaveUrl, {
+                method: 'POST',
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-Token': root.dataset.csrfToken },
+                body: JSON.stringify({
+                    eventDate: data.get('eventDate'),
+                    type: data.get('type'),
+                    note: data.get('note')
+                })
+            });
+            closeModal(eventModal);
+            await load();
+        } catch (error) {
+            showFeedback(error.message);
+        }
+    });
+
+    periodList.addEventListener('click', async (event) => {
+        const edit = event.target.closest('[data-edit-period]');
+        const remove = event.target.closest('[data-delete-period]');
+        if (edit) {
+            const period = state.periods.find((item) => String(item.id) === edit.dataset.editPeriod);
+            if (period) {
+                resetPeriodForm(period);
+                openModal(periodModal);
+            }
+            return;
+        }
+        if (remove) {
+            const period = state.periods.find((item) => String(item.id) === remove.dataset.deletePeriod);
+            if (!period || !confirm(`Supprimer la periode du ${formatDate(period.startDate)} ?`)) return;
+            try {
+                await request(routeUrl(root.dataset.periodDeleteUrlTemplate, period.id), {
+                    method: 'DELETE',
+                    headers: { Accept: 'application/json', 'X-CSRF-Token': root.dataset.csrfToken }
+                });
+                await load();
+            } catch (error) {
+                showFeedback(error.message);
+            }
+        }
+    });
+
+    eventList.addEventListener('click', async (event) => {
+        const remove = event.target.closest('[data-delete-event]');
+        if (!remove) return;
+        try {
+            await request(routeUrl(root.dataset.eventDeleteUrlTemplate, remove.dataset.deleteEvent), {
+                method: 'DELETE',
+                headers: { Accept: 'application/json', 'X-CSRF-Token': root.dataset.csrfToken }
+            });
+            await load();
+        } catch (error) {
+            showFeedback(error.message);
+        }
+    });
+
+    load().catch((error) => {
+        periodList.innerHTML = `<div class="cycle-empty">${escapeHtml(error.message)}</div>`;
+    });
+})();
+</script>
+{% endblock %}
